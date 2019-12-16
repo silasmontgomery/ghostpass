@@ -22,12 +22,11 @@
       </form>
     </div>
     <div class="card" v-if="created">
-      <h1>New Ghostpass safe created!</h1>
       <h2>Your seed words (write these down someplace safe):</h2>
-      <div class="bg-black text-green-300 p-2 mb-1">{{ seed }}</div>
-      <p>You'll need these words to get your unique URL if you lose or forget it.</p>
+      <p class="bg-gray-200 font-mono text-lg">{{ seed }}</p>
+      <p class="font-hairline">You'll need these words to get your unique URL if you lose or forget it.</p>
       <h2>Your Ghostpass Unique URL (be sure to bookmark):</h2>
-      <p><a :href="'/safe/' + uid" target="_blank">{{ url }}</a></p>
+      <p class="bg-gray-200 text-lg"><a :href="'/safe/' + uid" target="_blank">{{ '/safe/' + uid }}</a></p>
     </div>
   </div>
 </template>
@@ -75,7 +74,6 @@ export default {
       .then((response) => {
         console.log(response)
         this.uid = response.data.uid
-        this.url = window.location.hostname + '/safe/' + this.uid
         this.seed = response.data.seed
         this.safe = {
           uid: this.uid,

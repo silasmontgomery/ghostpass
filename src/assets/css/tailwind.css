@@ -12,7 +12,7 @@ h1 {
     margin-bottom: 10px;
 }
 h2 {
-    font-size: 1.125rem;
+    font-size: 1.25rem;
     font-weight: 500;
     margin-bottom: 10px;   
 }
@@ -34,6 +34,9 @@ a {
 }
 .btn {
     @apply font-bold py-2 px-4 rounded;
+}
+.btn-sm {
+    @apply font-normal py-1 px-2
 }
 .btn-blue {
     @apply bg-blue-500 text-white;
