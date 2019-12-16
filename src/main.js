@@ -1,8 +1,27 @@
 import Vue from 'vue'
-import App from './App.vue'
+import VueRouter from 'vue-router'
+import '@/assets/css/tailwind.css'
 
 Vue.config.productionTip = false
+Vue.use(VueRouter)
+
+// Components
+import App from './App.vue'
+import Home from './components/Home.vue'
+import New from './components/New.vue'
+
+const routes = [
+  { path: '/', component: Home },
+  { path: '/new', component: New }
+]
+
+const router = new VueRouter({
+  mode: 'history',
+  routes: routes
+})
 
 new Vue({
-  render: h => h(App),
-}).$mount('#app')
+  el: '#app',
+  components: { App },
+  router
+})
