@@ -14,10 +14,10 @@
         <tbody>
           <tr v-for="(password, index) in safe.passwords" :key="index">
             <td>{{ password.title }}</td>
-            <td>{{ password.username }}</td>
-            <td>{{ mask(password.password) }}</td>
+            <td><img class="w-4 inline-block cursor-pointer" src="../assets/img/clippy.svg" @click="copyToClipboard(password.username)" /> {{ password.username }}</td>
+            <td><img class="w-4 inline-block cursor-pointer" src="../assets/img/clippy.svg" @click="copyToClipboard(password.password)" /> {{ mask(password.password) }}</td>
             <td>{{ password.tags.join(', ') }}</td>
-            <td></td>
+            <td><img class="w-4 inline-block cursor-pointer text-red-600" src="../assets/img/trash.svg" @click="deleteEntry(index)" /></td>
           </tr>
           <tr>
             <td><input class="shadow appearance-none border rounded w-full py-1 px-1 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="text" v-model="title" placeholder="Title" /></td>
@@ -86,8 +86,14 @@ export default {
       })
     },
     decryptSafe: function() {
-      let bytes = this.$crypto.AES.decrypt(this.encryptedSafe, this.passphrase)
-      this.safe = JSON.parse(bytes.toString(this.$crypto.enc.Utf8))
+      try {
+        let bytes = this.$crypto.AES.decrypt(this.encryptedSafe, this.passphrase)
+        this.safe = JSON.parse(bytes.toString(this.$crypto.enc.Utf8))
+      }
+      catch(err) {
+        this.$emit('flash', { message: 'Problem decrypting safe. Wrong password?', success: false })
+        this.passphrase = null
+      }
     },
     saveEntry: function() {
       let entry = {
@@ -101,9 +107,9 @@ export default {
       this.username = null
       this.password = null
       this.tags = []
-      this.saveSafe()
+      this.saveSafe('Safe updated')
     },
-    saveSafe: function() {
+    saveSafe: function(message) {
       this.encryptedSafe = this.$crypto.AES.encrypt(JSON.stringify(this.safe), this.passphrase).toString()
       this.$http.put('/api/safe/' + this.uid, {
         uid: this.uid,
@@ -111,10 +117,23 @@ export default {
       })
       .then((response) => {
         console.log(response)
+        this.$emit('flash', { message: message, success: true })
       })
       .catch((error) => {
         console.log(error.response)
       })
+    },
+    deleteEntry: function(delIndex) {
+      if(confirm('Are you sure you want to delete this entry?')) {
+        let passwords = []
+        this.safe.passwords.forEach((password, index) => {
+          if(delIndex != index) {
+            passwords.push(password)
+          }
+        })
+        this.safe.passwords = passwords;
+        this.saveSafe('Password deleted')
+      }
     },
     mask: function(text) {
       let masked = ''
@@ -122,6 +141,17 @@ export default {
         masked += '*'
       }
       return masked;
+    },
+    copyToClipboard: function(text) {
+      let el = document.createElement('textarea')
+      el.value = text;
+      el.setAttribute('readonly', '')
+      el.style = {position: 'absolute', left: '-9999px'}
+      document.body.appendChild(el);
+      el.select();
+      document.execCommand('copy')
+      document.body.removeChild(el)
+      this.$emit('flash', { message: 'Copied to clipboard', success: true })
     }
   }
 }

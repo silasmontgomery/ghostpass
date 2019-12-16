@@ -30,7 +30,7 @@ a {
     Custom Components
 */
 .card {
-    @apply max-w-3xl mx-auto p-4 mb-4 text-left bg-white shadow-md rounded;
+    @apply mx-auto p-4 mb-4 text-left bg-white shadow-md rounded;
 }
 .btn {
     @apply font-bold py-2 px-4 rounded;
