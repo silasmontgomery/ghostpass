@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="card">
+    <div class="card" v-if="!created">
       <h2>Enter a passphrase to encrypt/decrypt your safe.</h2>
       <p>Ghostpass uses AES128, AES192, AES256 encryption depending on the complexity of your passphrase. The more complex the passphrase, the better the encryption.
       <form @submit.prevent>
@@ -21,6 +21,14 @@
         <button :disabled="!ready" class="btn btn-blue" @click="createSafe">Create Ghostpass Password Safe</button>
       </form>
     </div>
+    <div class="card" v-if="created">
+      <h1>New Ghostpass safe created!</h1>
+      <h2>Your seed words (write these down someplace safe):</h2>
+      <div class="bg-black text-green-300 p-2 mb-1">{{ seed }}</div>
+      <p>You'll need these words to get your unique URL if you lose or forget it.</p>
+      <h2>Your Ghostpass Unique URL (be sure to bookmark):</h2>
+      <p><a :href="'/safe/' + uid" target="_blank">{{ url }}</a></p>
+    </div>
   </div>
 </template>
 
@@ -31,6 +39,11 @@ export default {
     return {
       passphrase: null,
       confirmPassphrase: null,
+      seed: null,
+      uid: null,
+      url: null,
+      safe: null,
+      created: false,
       error: {},
     }
   },
@@ -61,6 +74,30 @@ export default {
       this.$http.post('/api/safe')
       .then((response) => {
         console.log(response)
+        this.uid = response.data.uid
+        this.url = window.location.hostname + '/safe/' + this.uid
+        this.seed = response.data.seed
+        this.safe = {
+          uid: this.uid,
+          passwords: [],
+          tags: []
+        }
+        this.saveSafe();
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+      .finally(() => {
+
+      })
+    },
+    saveSafe: function() {
+      this.$http.put('/api/safe/' + this.uid, {
+        safe: this.$crypto.AES.encrypt(JSON.stringify(this.safe), this.passphrase).toString()
+      })
+      .then((response) => {
+        console.log(response)
+        this.created = true
       })
       .catch((error) => {
         console.log(error)

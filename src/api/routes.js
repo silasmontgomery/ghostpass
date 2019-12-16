@@ -10,15 +10,15 @@ router.get('/', (req, res) => res.send('Ghostpass API'))
 
 // Update safe
 router.put('/safe/:uid', (req, res) => {
-    fs.writeFileSync('safes/' + req.params.uid, req.body.safe, 'utf8')
+    fs.writeFileSync(path.join(__dirname, './') + 'safes/' + req.params.uid, req.body.safe, 'utf8')
 
     res.json({ result: 'Safe saved successfully.' })
 })
 
 // Get safe
 router.get('/safe/:uid', (req, res) => {
-    if(fs.existsSync('safes/' + req.params.uid)) {
-        let safe = fs.readFileSync('safes/' + req.params.uid, 'utf8')
+    if(fs.existsSync(path.join(__dirname, './') + 'safes/' + req.params.uid)) {
+        let safe = fs.readFileSync(path.join(__dirname, './') + 'safes/' + req.params.uid, 'utf8')
         let response = {
             uid: req.params.uid,
             safe: safe
