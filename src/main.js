@@ -1,9 +1,13 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import Axios from 'axios'
 import '@/assets/css/tailwind.css'
 
 Vue.config.productionTip = false
 Vue.use(VueRouter)
+
+// Add axios as http prototype
+Vue.prototype.$http = Axios;
 
 // Components
 import App from './App.vue'

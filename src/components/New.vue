@@ -3,7 +3,7 @@
     <div class="card">
       <h2>Enter a passphrase to encrypt/decrypt your safe.</h2>
       <p>Ghostpass uses AES128, AES192, AES256 encryption depending on the complexity of your passphrase. The more complex the passphrase, the better the encryption.
-      <form>
+      <form @submit.prevent>
         <div class="mb-4">
           <label class="block text-gray-700 text-sm font-bold mb-2" for="password">
             Passphrase
@@ -58,7 +58,16 @@ export default {
   },
   methods: {
     createSafe: function() {
+      this.$http.post('/api/safe')
+      .then((response) => {
+        console.log(response)
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+      .finally(() => {
 
+      })
     }
   }
 }
