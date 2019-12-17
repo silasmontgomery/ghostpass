@@ -24,8 +24,18 @@ ul {
     padding-left: 30px;
 }
 a {
-    color: #6699cc;
+    @apply text-blue-500;
 }
+a:hover {
+    @apply text-blue-600;
+}
+a.danger {
+    @apply text-red-600;
+}
+a.danger:hover {
+    @apply text-red-700;
+}
+
 /**
     Custom Components
 */

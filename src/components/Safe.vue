@@ -14,10 +14,13 @@
         <tbody>
           <tr v-for="(password, index) in safe.passwords" :key="index">
             <td>{{ password.title }}</td>
-            <td><img class="w-4 inline-block cursor-pointer" src="../assets/img/clippy.svg" @click="copyToClipboard(password.username)" /> {{ password.username }}</td>
-            <td><img class="w-4 inline-block cursor-pointer" src="../assets/img/clippy.svg" @click="copyToClipboard(password.password)" /> {{ mask(password.password) }}</td>
+            <td>{{ password.username }} <a href="#" @click.prevent="copyToClipboard(password.username)"><i class="material-icons">attachment</i></a></td>
+            <td>{{ mask(password.password) }} <a href="#" @click.prevent="copyToClipboard(password.password)"><i class="material-icons" >attachment</i></a></td>
             <td>{{ password.tags.join(', ') }}</td>
-            <td><img class="w-4 inline-block cursor-pointer text-red-600" src="../assets/img/trash.svg" @click="deleteEntry(index)" /></td>
+            <td>
+              <a href="#" @click.prevent="editEntry(index)"><i class="material-icons">edit</i></a> 
+              <a class="danger" href="#" @click.prevent="deleteEntry(index)"><i class="material-icons">delete</i></a>
+            </td>
           </tr>
           <tr>
             <td><input class="shadow appearance-none border rounded w-full py-1 px-1 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="text" v-model="title" placeholder="Title" /></td>

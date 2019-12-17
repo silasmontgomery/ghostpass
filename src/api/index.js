@@ -13,8 +13,8 @@ configureApi(app);
 const publicPath = resolve(__dirname, '../../dist')
 const staticConf = { maxAge: '1y', etag: false }
 
-app.use(express.static(publicPath, staticConf))
 app.use('/', history())
+app.use(express.static(publicPath, staticConf))
 
 // Start server
 app.listen(port, () => console.log(`Ghostpass listening on port ${port}!`))
