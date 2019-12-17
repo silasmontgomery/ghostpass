@@ -16,6 +16,7 @@ import App from './App.vue'
 import Home from './components/Home.vue'
 import New from './components/New.vue'
 import Safe from './components/Safe.vue'
+import './registerServiceWorker'
 
 const routes = [
   { path: '/', component: Home },
