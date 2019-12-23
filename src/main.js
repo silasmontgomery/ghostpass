@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import VueTagsInput from '@johmun/vue-tags-input'
 import Axios from 'axios'
 import CryptoJS from 'crypto-js'
 import './registerServiceWorker'
@@ -7,6 +8,7 @@ import '@/assets/css/tailwind.css'
 
 Vue.config.productionTip = false
 Vue.use(VueRouter)
+Vue.use(VueTagsInput)
 
 // Add vue prototypes for component access
 Vue.prototype.$http = Axios
