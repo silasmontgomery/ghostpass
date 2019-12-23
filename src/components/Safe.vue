@@ -1,6 +1,9 @@
 <template>
   <div>
     <div v-if="safe" class="card">
+      <a href="#" class="tag" v-for="(tag, index) in safe.tags" :key="index" @click.prevent="tagClick(tag)">{{ tag }}</a>
+    </div>
+    <div v-if="safe" class="card">
       <table class="w-full">
         <thead>
           <tr>
@@ -16,7 +19,7 @@
             <td>{{ password.title }}</td>
             <td>{{ password.username }} <a href="#" @click.prevent="copyToClipboard(password.username)"><i class="material-icons">attachment</i></a></td>
             <td>{{ mask(password.password) }} <a href="#" @click.prevent="copyToClipboard(password.password)"><i class="material-icons" >attachment</i></a></td>
-            <td><span class="border p-1 rounded mr-1 bg-gray-400 text-gray-700" v-for="(tag, index) in password.tags" :key="index">{{ tag.text }}</span></td>
+            <td><span class="tag" v-for="(tag, index) in password.tags" :key="index">{{ tag }}</span></td>
             <td>
               <a href="#" @click.prevent="editEntry(index)"><i class="material-icons">edit</i></a> 
               <a class="danger" href="#" @click.prevent="deleteEntry(index)"><i class="material-icons">delete</i></a>
@@ -88,6 +91,7 @@ export default {
       tag: '',
       tags: [],
       searchText: '',
+      searchTags: [],
       currentPage: 1,
       perPage: 10,
       pages: 0,
@@ -113,7 +117,7 @@ export default {
     },
     filteredItems: function() {
       return this.safe.tags.filter(i => {
-        return i.text.toLowerCase().indexOf(this.tag.toLowerCase()) !== -1;
+        return i.toLowerCase().indexOf(this.tag.toLowerCase()) !== -1;
       });
     },
   },
@@ -148,7 +152,7 @@ export default {
         title: this.title,
         username: this.username,
         password: this.password,
-        tags: this.tags
+        tags: this.tags.map(t => t.text)
       }
       this.safe.passwords.push(entry)
       this.safe.passwords.sort((a, b) => (a.title > b.title) ? 1 : -1)
@@ -189,12 +193,12 @@ export default {
     updateTags: function() {
       this.safe.passwords.forEach(password => {
         password.tags.forEach(tag => {
-          if(!this.safe.tags.find(t => t.text.toLowerCase() == tag.text.toLowerCase())) {
+          if(!this.safe.tags.find(t => t.toLowerCase() == tag.toLowerCase())) {
             this.safe.tags.push(tag)
           }
         })
       })
-      this.safe.tags.sort((a, b) => (a.text > b.text) ? 1 : -1)
+      this.safe.tags.sort((a, b) => (a > b) ? 1 : -1)
     },
     mask: function(text) {
       let masked = ''
@@ -202,6 +206,11 @@ export default {
         masked += '*'
       }
       return masked;
+    },
+    tagClick: function(item) {
+      if(this.searchTags.findIndex(t => t == item) == -1) {
+        this.searchTags.push(item)
+      }
     },
     copyToClipboard: function(text) {
       let el = document.createElement('textarea')
