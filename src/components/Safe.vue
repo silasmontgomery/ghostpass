@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-if="safe" class="card">
-      <a href="#" class="tag" v-for="(tag, index) in safe.tags" :key="index" @click.prevent="tagClick(tag)">{{ tag }}</a>
+      <a href="#" class="tag" v-for="(tag, index) in safe.tags" :class="searchTags.findIndex(t => t.text == tag.text) > -1 ? 'selected':''" :key="index" @click.prevent="tagClick(tag)">{{ tag.text }}</a>
     </div>
     <div v-if="safe" class="card">
       <table class="w-full">
@@ -19,7 +19,7 @@
             <td>{{ password.title }}</td>
             <td>{{ password.username }} <a href="#" @click.prevent="copyToClipboard(password.username)"><i class="material-icons">attachment</i></a></td>
             <td>{{ mask(password.password) }} <a href="#" @click.prevent="copyToClipboard(password.password)"><i class="material-icons" >attachment</i></a></td>
-            <td><span class="tag" v-for="(tag, index) in password.tags" :key="index">{{ tag }}</span></td>
+            <td><span class="tag" v-for="(tag, index) in password.tags" :key="index">{{ tag.text }}</span></td>
             <td>
               <a href="#" @click.prevent="editEntry(index)"><i class="material-icons">edit</i></a> 
               <a class="danger" href="#" @click.prevent="deleteEntry(index)"><i class="material-icons">delete</i></a>
@@ -116,9 +116,7 @@ export default {
       return results.slice((this.currentPage * this.perPage) - this.perPage, (this.currentPage * this.perPage))
     },
     filteredItems: function() {
-      return this.safe.tags.filter(i => {
-        return i.toLowerCase().indexOf(this.tag.toLowerCase()) !== -1;
-      });
+      return this.safe.tags.filter(i => i.text.toLowerCase() == this.tag.toLowerCase());
     },
   },
   methods: {
@@ -152,7 +150,7 @@ export default {
         title: this.title,
         username: this.username,
         password: this.password,
-        tags: this.tags.map(t => t.text)
+        tags: this.tags
       }
       this.safe.passwords.push(entry)
       this.safe.passwords.sort((a, b) => (a.title > b.title) ? 1 : -1)
@@ -193,7 +191,7 @@ export default {
     updateTags: function() {
       this.safe.passwords.forEach(password => {
         password.tags.forEach(tag => {
-          if(!this.safe.tags.find(t => t.toLowerCase() == tag.toLowerCase())) {
+          if(!this.safe.tags.find(t => t.text.toLowerCase() == tag.text.toLowerCase())) {
             this.safe.tags.push(tag)
           }
         })
@@ -207,9 +205,11 @@ export default {
       }
       return masked;
     },
-    tagClick: function(item) {
-      if(this.searchTags.findIndex(t => t == item) == -1) {
-        this.searchTags.push(item)
+    tagClick: function(tag) {
+      if(this.searchTags.findIndex(t => t.text == tag.text) == -1) {
+        this.searchTags.push(tag)
+      } else {
+        this.searchTags = this.searchTags.filter(t => t.text != tag.text)
       }
     },
     copyToClipboard: function(text) {

@@ -70,3 +70,6 @@ a.danger:hover {
 a.tag:hover {
     @apply bg-gray-700 text-white
 }
+a.tag.selected {
+    @apply bg-blue-500
+}
