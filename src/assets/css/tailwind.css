@@ -30,10 +30,10 @@ a:hover {
     @apply text-blue-600;
 }
 a.danger {
-    @apply text-red-600;
+    @apply text-orange-600;
 }
 a.danger:hover {
-    @apply text-red-700;
+    @apply text-orange-700;
 }
 
 /**
@@ -60,16 +60,15 @@ a.danger:hover {
 .btn-orange:hover {
     @apply bg-orange-700;
 }
-.btn-blue:disabled,
-.btn-blue[disabled] {
+.btn-blue:disabled, .btn-blue[disabled] {
     @apply bg-blue-400 text-white;
 }
 .tag {
-    @apply bg-gray-500 text-white rounded py-1 px-2 mr-1 mb-1
+    @apply bg-gray-500 text-white rounded py-1 px-2 mr-1 mb-1 whitespace-no-wrap inline-block
 }
 a.tag:hover {
     @apply bg-gray-700 text-white
 }
 a.tag.selected {
-    @apply bg-blue-500
+    @apply bg-green-500
 }

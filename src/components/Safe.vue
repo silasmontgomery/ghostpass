@@ -1,46 +1,51 @@
 <template>
   <div>
     <div v-if="safe" class="card">
-      <a href="#" class="tag" v-for="(tag, index) in safe.tags" :class="searchTags.findIndex(t => t.text == tag.text) > -1 ? 'selected':''" :key="index" @click.prevent="tagClick(tag)">{{ tag.text }}</a>
+      <input type="text" class="appearance-none border w-full py-1 px-1 mb-3 text-gray-700 leading-tight focus:outline-none" v-model="searchText" placeholder="Search" />
+      <div class="overflow-wrap">
+        <a href="#" class="tag" v-for="(tag, index) in safe.tags" :class="searchTags.findIndex(t => t.text == tag.text) > -1 ? 'selected':''" :key="index" @click.prevent="tagClick(tag)">{{ tag.text }}</a>
+      </div>
     </div>
     <div v-if="safe" class="card">
-      <table class="w-full">
-        <thead>
-          <tr>
-            <th>Title</th>
-            <th>Username</th>
-            <th>Password</th>
-            <th>Tags</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(password, index) in filteredPasswords" :key="index">
-            <td>{{ password.title }}</td>
-            <td>{{ password.username }} <a href="#" @click.prevent="copyToClipboard(password.username)"><i class="material-icons">attachment</i></a></td>
-            <td>{{ mask(password.password) }} <a href="#" @click.prevent="copyToClipboard(password.password)"><i class="material-icons" >attachment</i></a></td>
-            <td><span class="tag" v-for="(tag, index) in password.tags" :key="index">{{ tag.text }}</span></td>
-            <td>
-              <a href="#" @click.prevent="editEntry(index)"><i class="material-icons">edit</i></a> 
-              <a class="danger" href="#" @click.prevent="deleteEntry(index)"><i class="material-icons">delete</i></a>
-            </td>
-          </tr>
-          <tr>
-            <td><input class="appearance-none border w-full py-1 px-1 text-gray-700 leading-tight focus:outline-none" type="text" v-model="title" placeholder="Title" /></td>
-            <td><input class="appearance-none border w-full py-1 px-1 text-gray-700 leading-tight focus:outline-none" type="text" v-model="username" placeholder="Username" /></td>
-            <td><input class="appearance-none border w-full py-1 px-1 text-gray-700 leading-tight focus:outline-none" type="text" v-model="password" placeholder="Password" @keyup.enter="saveEntry" /></td>
-            <td>
-              <vue-tags-input 
-                v-model="tag"
-                :tags="tags"
-                :autocomplete-items="filteredItems"
-                @tags-changed="newTags => tags = newTags">
-              </vue-tags-input>
-            </td>
-            <td><button class="btn btn-sm btn-blue" :disabled="!title || !username || !password" @click="saveEntry">Save</button></td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="overflow-auto">
+        <table class="w-full">
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Username</th>
+              <th>Password</th>
+              <th>Tags</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(password, index) in filteredPasswords" :key="index">
+              <td>{{ password.title }}</td>
+              <td>{{ password.username }} <a href="#" @click.prevent="copyToClipboard(password.username)"><i class="material-icons">attachment</i></a></td>
+              <td>{{ mask(password.password) }} <a href="#" @click.prevent="copyToClipboard(password.password)"><i class="material-icons" >attachment</i></a></td>
+              <td><span class="tag" v-for="(tag, index) in password.tags" :key="index">{{ tag.text }}</span></td>
+              <td>
+                <a href="#" @click.prevent="editEntry(index)"><i class="material-icons">edit</i></a> 
+                <a class="danger" href="#" @click.prevent="deleteEntry(index)"><i class="material-icons">delete</i></a>
+              </td>
+            </tr>
+            <tr>
+              <td><input class="appearance-none border w-full py-1 px-1 text-gray-700 leading-tight focus:outline-none" type="text" v-model="title" placeholder="Title" /></td>
+              <td><input class="appearance-none border w-full py-1 px-1 text-gray-700 leading-tight focus:outline-none" type="text" v-model="username" placeholder="Username" /></td>
+              <td><input class="appearance-none border w-full py-1 px-1 text-gray-700 leading-tight focus:outline-none" type="text" v-model="password" placeholder="Password" /></td>
+              <td>
+                <vue-tags-input 
+                  v-model="tag"
+                  :tags="tags"
+                  :autocomplete-items="filteredItems"
+                  @tags-changed="newTags => tags = newTags">
+                </vue-tags-input>
+              </td>
+              <td><button class="btn btn-sm btn-blue" :disabled="!title || !username || !password" @click="saveEntry">Save</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
       <div class="mt-3 text-gray-700">
         Per Page: 
         <select class="bg-white border p-1 text-gray-700" v-model="perPage" @change="perPageChanged">
@@ -112,6 +117,9 @@ export default {
           password.username.toLowerCase().includes(this.searchText.toLowerCase())
         )
       }
+      this.searchTags.forEach(tag => {
+        results = results.filter(r => r.tags.find(rt => rt.text == tag.text))
+      })
 
       return results.slice((this.currentPage * this.perPage) - this.perPage, (this.currentPage * this.perPage))
     },
