@@ -5,7 +5,7 @@
       <h1><span class="text-gray-500">Ghostpass:</span> <span class="text-gray-700">Really secure passwords.</span></h1>
     </div>
     <div>
-      <router-view @flash="flash = $event"></router-view>
+      <router-view @flash="flash = $event" @log="logToConsole"></router-view>
     </div>
   </div>
 </template>
@@ -27,6 +27,11 @@ export default {
     }
   },
   methods: {
+    logToConsole: function($event) {
+      if(process.env.NODE_ENV == 'development') {
+        console.log($event)
+      }
+    }
   }
 }
 </script>

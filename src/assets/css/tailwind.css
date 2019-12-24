@@ -64,11 +64,15 @@ a.danger:hover {
     @apply bg-blue-400 text-white;
 }
 .tag {
-    @apply bg-gray-500 text-white rounded py-1 px-2 mr-1 mb-1 whitespace-no-wrap inline-block
+    @apply bg-gray-500 text-sm text-white rounded py-1 px-2 mr-1 mb-1 whitespace-no-wrap inline-block
 }
 a.tag:hover {
     @apply bg-gray-700 text-white
 }
 a.tag.selected {
     @apply bg-green-500
+}
+
+.vue-tags-input {
+    background: #324652;
 }

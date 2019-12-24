@@ -1,50 +1,61 @@
 <template>
   <div>
     <div v-if="safe" class="card">
-      <input type="text" class="appearance-none border w-full py-1 px-1 mb-3 text-gray-700 leading-tight focus:outline-none" v-model="searchText" placeholder="Search" />
-      <div class="overflow-wrap">
-        <a href="#" class="tag" v-for="(tag, index) in safe.tags" :class="searchTags.findIndex(t => t.text == tag.text) > -1 ? 'selected':''" :key="index" @click.prevent="tagClick(tag)">{{ tag.text }}</a>
+      <div>
+        <div v-if="safe.tags.length > 0" class="overflow-auto pb-2">
+          <a href="#" class="tag" v-for="(tag, index) in safe.tags" :class="searchTags.findIndex(t => t.text == tag.text) > -1 ? 'selected':''" :key="index" @click.prevent="tagClick(tag)">{{ tag.text }}</a>
+        </div>
+        <input type="text" class="appearance-none border w-full p-1 mb-2 text-gray-700 leading-tight focus:outline-none" v-model="searchText" placeholder="Search" />
       </div>
-    </div>
-    <div v-if="safe" class="card">
-      <div class="overflow-auto">
-        <table class="w-full">
-          <thead>
-            <tr>
-              <th>Title</th>
-              <th>Username</th>
-              <th>Password</th>
-              <th>Tags</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(password, index) in filteredPasswords" :key="index">
-              <td>{{ password.title }}</td>
-              <td>{{ password.username }} <a href="#" @click.prevent="copyToClipboard(password.username)"><i class="material-icons">attachment</i></a></td>
-              <td>{{ mask(password.password) }} <a href="#" @click.prevent="copyToClipboard(password.password)"><i class="material-icons" >attachment</i></a></td>
-              <td><span class="tag" v-for="(tag, index) in password.tags" :key="index">{{ tag.text }}</span></td>
-              <td>
-                <a href="#" @click.prevent="editEntry(index)"><i class="material-icons">edit</i></a> 
-                <a class="danger" href="#" @click.prevent="deleteEntry(index)"><i class="material-icons">delete</i></a>
-              </td>
-            </tr>
-            <tr>
-              <td><input class="appearance-none border w-full py-1 px-1 text-gray-700 leading-tight focus:outline-none" type="text" v-model="title" placeholder="Title" /></td>
-              <td><input class="appearance-none border w-full py-1 px-1 text-gray-700 leading-tight focus:outline-none" type="text" v-model="username" placeholder="Username" /></td>
-              <td><input class="appearance-none border w-full py-1 px-1 text-gray-700 leading-tight focus:outline-none" type="text" v-model="password" placeholder="Password" /></td>
-              <td>
-                <vue-tags-input 
-                  v-model="tag"
-                  :tags="tags"
-                  :autocomplete-items="filteredItems"
-                  @tags-changed="newTags => tags = newTags">
-                </vue-tags-input>
-              </td>
-              <td><button class="btn btn-sm btn-blue" :disabled="!title || !username || !password" @click="saveEntry">Save</button></td>
-            </tr>
-          </tbody>
-        </table>
+      <div class="w-full flex p-2">
+        <div class="w-1/4 font-bold">Title</div>
+        <div class="w-1/4 font-bold">Username</div>
+        <div class="w-1/4 font-bold">Password</div>
+        <div class="w-1/4 font-bold">
+          Tags 
+          <a v-if="!addPassword" href="#" class="float-right text-xl" @click.prevent="addPassword=true"><i class="material-icons">add_circle</i></a>
+        </div>
+      </div>
+      <div v-if="addPassword" class="p-2 mb-2 bg-gray-200">
+        <div class="flex">
+          <div class="w-1/4 pr-1">
+            <input ref="title" class="appearance-none w-full p-2 border border-gray-400 text-sm text-gray-700 leading-tight focus:outline-none" type="text" v-model="title" placeholder="Title" />
+          </div>
+          <div class="w-1/4 pr-1">
+            <input class="appearance-none w-full p-2 border border-gray-400 text-sm text-gray-700 leading-tight focus:outline-none" type="text" v-model="username" placeholder="Username" />
+          </div>
+          <div class="w-1/4 pr-1">
+            <input class="appearance-none w-full p-2 border border-gray-400 text-sm text-gray-700 leading-tight focus:outline-none" type="text" v-model="password" placeholder="Password" />
+          </div>
+          <div class="w-1/4 pr-1">
+            <vue-tags-input 
+              v-model="tag"
+              :tags="tags"
+              :autocomplete-items="filteredItems"
+              @tags-changed="newTags => tags = newTags">
+            </vue-tags-input>
+          </div>
+        </div>
+        <div class="mt-2">
+          <button class="btn btn-sm btn-blue" :disabled="!title || !username || !password" @click="saveEntry">Save</button> 
+          <button class="btn btn-sm btn-orange ml-2" @click="addPassword=false">Cancel</button>
+        </div>
+      </div>
+      <div v-for="(password, index) in filteredPasswords" :key="index" class="flex mb-2 bg-gray-200 p-2">
+        <div class="w-1/4">
+          {{ password.title }} 
+          <a href="#" @click.prevent="editEntry(index)"><i class="material-icons">edit</i></a> 
+          <a class="danger" href="#" @click.prevent="deleteEntry(index)"><i class="material-icons">delete</i></a>
+        </div>
+        <div class="w-1/4">
+          {{ password.username }} <a href="#" @click.prevent="copyToClipboard(password.username)"><i class="material-icons">attachment</i></a>
+        </div>
+        <div class="w-1/4">
+          {{ mask(password.password) }} <a href="#" @click.prevent="copyToClipboard(password.password)"><i class="material-icons" >attachment</i></a>
+        </div>
+        <div class="w-1/4">
+          <span class="tag" v-for="(tag, index) in password.tags" :key="index">{{ tag.text }}</span>
+        </div>
       </div>
       <div class="mt-3 text-gray-700">
         Per Page: 
@@ -101,12 +112,25 @@ export default {
       perPage: 10,
       pages: 0,
       notFound: false,
+      addPassword: false,
       error: {}
     }
   },
   mounted: function() {
     this.uid = this.$route.params.uid
     this.fetchSafe()
+  },
+  watch: {
+    addPassword: function(value) {
+      if(value) {
+        this.$nextTick(() => this.$refs.title.focus())
+      } else {
+        this.title = null
+        this.username = null
+        this.password = null
+        this.tags = []
+      }
+    }
   },
   computed: {
     filteredPasswords: function() {
@@ -124,22 +148,19 @@ export default {
       return results.slice((this.currentPage * this.perPage) - this.perPage, (this.currentPage * this.perPage))
     },
     filteredItems: function() {
-      return this.safe.tags.filter(i => i.text.toLowerCase() == this.tag.toLowerCase());
+      return this.safe.tags.filter(i => i.text.toLowerCase().includes(this.tag.toLowerCase()));
     },
   },
   methods: {
     fetchSafe: function() {
       this.$http.get('/api/safe/' + this.uid)
       .then((response) => {
-        console.log(response)
+        this.$emit('log', response)
         this.encryptedSafe = response.data.safe
       })
       .catch((error) => {
         console.log(error.response)
         this.notFound = error.response
-      })
-      .finally(() => {
-
       })
     },
     decryptSafe: function() {
@@ -162,10 +183,7 @@ export default {
       }
       this.safe.passwords.push(entry)
       this.safe.passwords.sort((a, b) => (a.title > b.title) ? 1 : -1)
-      this.title = null
-      this.username = null
-      this.password = null
-      this.tags = []
+      this.addPassword = false
       this.saveSafe('Safe updated')
     },
     saveSafe: function(message) {
