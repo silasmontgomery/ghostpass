@@ -2,19 +2,17 @@
   <div>
     <div v-if="safe" class="card">
       <div>
-        <div v-if="safe.tags.length > 0" class="overflow-auto pb-2">
+        <div class="inline-block" v-if="safe.tags.length > 0">
+          <input type="text" class="appearance-none rounded border border-gray-400 py-1 px-2 mb-1 mr-2 text-sm text-gray-700 leading-tight focus:outline-none" v-model="searchText" placeholder="Search" />
           <a href="#" class="tag" v-for="(tag, index) in safe.tags" :class="searchTags.findIndex(t => t.text == tag.text) > -1 ? 'selected':''" :key="index" @click.prevent="tagClick(tag)">{{ tag.text }}</a>
         </div>
-        <input type="text" class="appearance-none border w-full p-1 mb-2 text-gray-700 leading-tight focus:outline-none" v-model="searchText" placeholder="Search" />
+        <a v-if="!addPassword" href="#" class="float-right text-xl" @click.prevent="addPassword=true"><i class="material-icons">add_circle</i></a>
       </div>
       <div class="w-full flex p-2">
         <div class="w-1/4 font-bold">Title</div>
         <div class="w-1/4 font-bold">Username</div>
         <div class="w-1/4 font-bold">Password</div>
-        <div class="w-1/4 font-bold">
-          Tags 
-          <a v-if="!addPassword" href="#" class="float-right text-xl" @click.prevent="addPassword=true"><i class="material-icons">add_circle</i></a>
-        </div>
+        <div class="w-1/4 font-bold">Tags</div>
       </div>
       <div v-if="addPassword" class="p-2 mb-2 bg-gray-200">
         <div class="flex">
