@@ -1,73 +1,76 @@
 <template>
   <div>
     <div v-if="safe" class="card">
-      <div>
+      <div class="mb-2">
         <div class="inline-block" v-if="safe.tags.length > 0">
           <input type="text" class="appearance-none rounded border border-gray-400 py-1 px-2 mb-1 mr-2 text-sm text-gray-700 leading-tight focus:outline-none" v-model="searchText" placeholder="Search" />
           <a href="#" class="tag" v-for="(tag, index) in safe.tags" :class="searchTags.findIndex(t => t.text == tag.text) > -1 ? 'selected':''" :key="index" @click.prevent="tagClick(tag)">{{ tag.text }}</a>
         </div>
         <a v-if="!addPassword" href="#" class="float-right text-xl" @click.prevent="addPassword=true"><i class="material-icons">add_circle</i></a>
       </div>
-      <div class="w-full flex p-2">
-        <div class="w-1/4 font-bold">Title</div>
-        <div class="w-1/4 font-bold">Username</div>
-        <div class="w-1/4 font-bold">Password</div>
-        <div class="w-1/4 font-bold">Tags</div>
-      </div>
-      <div v-if="addPassword" class="p-2 mb-2 bg-gray-200">
-        <div class="flex">
-          <div class="w-1/4 pr-1">
-            <input ref="title" class="appearance-none w-full p-2 border border-gray-400 text-sm text-gray-700 leading-tight focus:outline-none" type="text" v-model="title" placeholder="Title" />
+      <div class="overflow-auto">
+        <div v-if="addPassword" class="p-2 mb-2 bg-gray-200">
+          <div class="flex">
+            <div class="w-1/4 pr-1">
+              <input ref="title" class="appearance-none w-full p-2 border border-gray-400 text-sm text-gray-700 leading-tight focus:outline-none" type="text" v-model="title" placeholder="Title" />
+            </div>
+            <div class="w-1/4 pr-1">
+              <input class="appearance-none w-full p-2 border border-gray-400 text-sm text-gray-700 leading-tight focus:outline-none" type="text" v-model="username" placeholder="Username" />
+            </div>
+            <div class="w-1/4 pr-1">
+              <input class="appearance-none w-full p-2 border border-gray-400 text-sm text-gray-700 leading-tight focus:outline-none" type="text" v-model="password" placeholder="Password" />
+            </div>
+            <div class="w-1/4 pr-1">
+              <vue-tags-input 
+                v-model="tag"
+                :tags="tags"
+                :autocomplete-items="filteredItems"
+                @tags-changed="newTags => tags = newTags">
+              </vue-tags-input>
+            </div>
           </div>
-          <div class="w-1/4 pr-1">
-            <input class="appearance-none w-full p-2 border border-gray-400 text-sm text-gray-700 leading-tight focus:outline-none" type="text" v-model="username" placeholder="Username" />
-          </div>
-          <div class="w-1/4 pr-1">
-            <input class="appearance-none w-full p-2 border border-gray-400 text-sm text-gray-700 leading-tight focus:outline-none" type="text" v-model="password" placeholder="Password" />
-          </div>
-          <div class="w-1/4 pr-1">
-            <vue-tags-input 
-              v-model="tag"
-              :tags="tags"
-              :autocomplete-items="filteredItems"
-              @tags-changed="newTags => tags = newTags">
-            </vue-tags-input>
+          <div class="mt-2">
+            <button class="btn btn-sm btn-blue" :disabled="!title || !username || !password" @click="saveEntry">Save</button> 
+            <button class="btn btn-sm btn-orange ml-2" @click="addPassword=false">Cancel</button>
           </div>
         </div>
-        <div class="mt-2">
-          <button class="btn btn-sm btn-blue" :disabled="!title || !username || !password" @click="saveEntry">Save</button> 
-          <button class="btn btn-sm btn-orange ml-2" @click="addPassword=false">Cancel</button>
+        <table class="w-full">
+          <thead>
+            <tr>
+              <th class="whitespace-no-wrap pr-2">Title</th>
+              <th class="whitespace-no-wrap pr-2">Username</th>
+              <th class="whitespace-no-wrap pr-2">Password</th>
+              <th class="whitespace-no-wrap pr-2">Tags</th>
+              <th class="whitespace-no-wrap"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(password, index) in filteredPasswords" :key="index">
+              <td class="whitespace-no-wrap pr-2">{{ password.title }} </td>
+              <td class="whitespace-no-wrap pr-2">{{ password.username }} <a href="#" @click.prevent="copyToClipboard(password.username)"><i class="material-icons">attachment</i></a></td>
+              <td class="whitespace-no-wrap pr-2">{{ mask(password.password) }} <a href="#" @click.prevent="copyToClipboard(password.password)"><i class="material-icons" >attachment</i></a></td>
+              <td class="whitespace-no-wrap pr-2"><span class="tag" v-for="(tag, index) in password.tags" :key="index">{{ tag.text }}</span></td>
+              <td class="whitespace-no-wrap">
+                <a href="#" @click.prevent="editEntry(index)"><i class="material-icons">edit</i></a> 
+                <a class="danger" href="#" @click.prevent="deleteEntry(index)"><i class="material-icons">delete</i></a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="mt-3 text-gray-700">
+          Per Page: 
+          <select class="bg-white border p-1 text-gray-700" v-model="perPage" @change="perPageChanged">
+            <option>10</option>
+            <option>25</option>
+            <option>50</option>
+            <option>100</option>
+          </select>
+          <span class="ml-2" v-if="pages > 1">
+            Page: <a href="#" @click.prevent="currentPage > 1 ? currentPage-- : false">&lt;&lt;</a>
+            <a href="#" v-for="page in pages" :key="page" class="mx-1" :class="currentPage == page ? 'font-bold':''" @click.prevent="currentPage=page">{{ page }}</a>
+            <a href="#" @click.prevent="currentPage < pages ? currentPage++ : false">&gt;&gt;</a>
+          </span>
         </div>
-      </div>
-      <div v-for="(password, index) in filteredPasswords" :key="index" class="flex mb-2 bg-gray-200 p-2">
-        <div class="w-1/4">
-          {{ password.title }} 
-          <a href="#" @click.prevent="editEntry(index)"><i class="material-icons">edit</i></a> 
-          <a class="danger" href="#" @click.prevent="deleteEntry(index)"><i class="material-icons">delete</i></a>
-        </div>
-        <div class="w-1/4">
-          {{ password.username }} <a href="#" @click.prevent="copyToClipboard(password.username)"><i class="material-icons">attachment</i></a>
-        </div>
-        <div class="w-1/4">
-          {{ mask(password.password) }} <a href="#" @click.prevent="copyToClipboard(password.password)"><i class="material-icons" >attachment</i></a>
-        </div>
-        <div class="w-1/4">
-          <span class="tag" v-for="(tag, index) in password.tags" :key="index">{{ tag.text }}</span>
-        </div>
-      </div>
-      <div class="mt-3 text-gray-700">
-        Per Page: 
-        <select class="bg-white border p-1 text-gray-700" v-model="perPage" @change="perPageChanged">
-          <option>10</option>
-          <option>25</option>
-          <option>50</option>
-          <option>100</option>
-        </select>
-        <span class="ml-2" v-if="pages > 1">
-          Page: <a href="#" @click.prevent="currentPage > 1 ? currentPage-- : false">&lt;&lt;</a>
-          <a href="#" v-for="page in pages" :key="page" class="mx-1" :class="currentPage == page ? 'font-bold':''" @click.prevent="currentPage=page">{{ page }}</a>
-          <a href="#" @click.prevent="currentPage < pages ? currentPage++ : false">&gt;&gt;</a>
-        </span>
       </div>
     </div>
     <div v-if="!notFound && !safe" class="card">
