@@ -23,6 +23,11 @@ ul {
     list-style: square;
     padding-left: 30px;
 }
+label {
+    display: block;
+    margin-top: 10px;
+    margin-bottom: 5px;
+}
 a {
     @apply text-blue-500;
 }
