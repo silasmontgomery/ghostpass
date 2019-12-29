@@ -32,9 +32,9 @@
         </div>
       </div>
       <div class="rounded-t pb-3 bg-white"></div>
-      <div class="bg-white pl-4 pr-4 p-2" v-for="(password, index) in filteredPasswords" :key="index" :class="index < filteredPasswords.length-1 ? 'border-b border-gray-200':''">
+      <div class="bg-white pl-4 pr-4 p-2" v-for="(password, index) in filteredPasswords" :key="index" :class="index < filteredPasswords.length-1 ? 'border-b border-gray-200':''" @click="showDetailsClick(index)">
         {{ password.title }}
-        <div class="rounded bg-gray-200 p-2 m-2">
+        <div class="rounded bg-gray-200 p-2 m-2" v-if="showDetails==index">
           <div>
             <label for="usernameText">Username</label>
             <div id="usernameText">
@@ -108,6 +108,7 @@ export default {
       password: null,
       tag: '',
       tags: [],
+      showDetails: null,
       searchText: '',
       searchTags: [],
       currentPage: 1,
@@ -238,6 +239,12 @@ export default {
         this.searchTags.push(tag)
       } else {
         this.searchTags = this.searchTags.filter(t => t.text != tag.text)
+      }
+    },
+    showDetailsClick: function(index) {
+      this.showDetails = null
+      if(this.showDetails != index) {
+        this.showDetails = index
       }
     },
     copyToClipboard: function(text) {
