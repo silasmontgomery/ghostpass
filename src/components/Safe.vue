@@ -29,8 +29,8 @@
         </div>
       </div>
       <div class="card mt-4">
-        <div class="password" v-for="(password, index) in filteredPasswords" :key="index" @click="toggleDetails(index)" :class="showDetails==index ? 'selected':''">
-          <div class="px-4 py-2">{{ password.title }}</div>
+        <div class="password" v-for="(password, index) in filteredPasswords" :key="index" :class="showDetails==index ? 'selected':''">
+          <div class="px-4 py-2" @click="toggleDetails(index)">{{ password.title }}</div>
           <div class="shadow-inner bg-gray-200 px-4 py-2" v-if="showDetails==index">
             <div class="overflow-auto">
               <div class="whitespace-no-wrap">
