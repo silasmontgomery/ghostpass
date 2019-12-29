@@ -3,17 +3,17 @@
     <a v-if="safe" href="#" class="fixed right-0 top-0 mr-2 mt-2" @click="addPassword = !addPassword"><i class="material-icons text-5xl"><span v-if="!addPassword">add_circle</span><span v-if="addPassword">remove_circle</span></i></a>
     <div v-if="safe">
       <div v-if="!addPassword" class="mb-4">
-        <input class="mb-2" type="text" v-model="searchText" placeholder="Search" />
+        <input class="mb-2 focus:outline-none" type="text" v-model="searchText" placeholder="Search" />
         <a href="#" class="tag" v-for="(tag, index) in safe.tags" :class="searchTags.findIndex(t => t.text == tag.text) > -1 ? 'selected':''" :key="index" @click.prevent="tagClick(tag)">{{ tag.text }}</a>
       </div>
       <div v-if="addPassword" class="card p-4">
         <div>
           <label for="title">Title</label>
-          <input id="title" ref="title" class="appearance-none w-full p-2 border border-gray-400 text-sm text-gray-700 leading-tight focus:outline-none" type="text" v-model="title" placeholder="Title" />
+          <input id="title" ref="title" class="focus:outline-none" type="text" v-model="title" placeholder="Title" />
           <label for="username">Username</label>
-          <input id="username" class="appearance-none w-full p-2 border border-gray-400 text-sm text-gray-700 leading-tight focus:outline-none" type="text" v-model="username" placeholder="Username" />
+          <input id="username" class="focus:outline-none" type="text" v-model="username" placeholder="Username" />
           <label for="password">Password</label>
-          <input id="password" class="appearance-none w-full p-2 border border-gray-400 text-sm text-gray-700 leading-tight focus:outline-none" type="text" v-model="password" placeholder="Password" />
+          <input id="password" class="focus:outline-none" type="text" v-model="password" placeholder="Password" />
           <label for="tags">Tags</label>
           <vue-tags-input 
             id="tags"
@@ -24,11 +24,12 @@
           </vue-tags-input>
         </div>
         <div class="mt-2">
-          <button class="btn btn-sm btn-blue" :disabled="!title || !username || !password" @click="saveEntry">Save</button> 
-          <button class="btn btn-sm btn-orange ml-2" @click="addPassword=false">Cancel</button>
+          <button class="btn btn-sm btn-green" :disabled="!title || !username || !password" @click="saveEntry">Save</button> 
+          <button class="btn btn-sm ml-2" @click="addPassword=false">Cancel</button>
         </div>
       </div>
       <div class="card mt-4">
+        <div class="px-4 py-2" v-if="filteredPasswords.length == 0">Hmm.. this safe is empty. <a href="#" @click.prevent="addPassword = true">Add your first password?</a></div>
         <div class="password" v-for="(password, index) in filteredPasswords" :key="index" :class="showDetails==index ? 'selected':''">
           <div class="px-4 py-2 cursor-pointer" @click="toggleDetails(index)">{{ password.title }}</div>
           <div class="shadow-inner bg-gray-200 px-4 py-2" v-if="showDetails==index">
@@ -68,12 +69,12 @@
     </div>
     <div v-if="!notFound && !safe" class="card p-4">
       <form @submit.prevent>
-        <div class="mb-4">
+        <div>
           <label for="passphrase">Enter a passphrase to decrypt safe</label>
-          <input :class="error.passphrase ? 'border-red-500':''" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" v-model="passphrase" id="passphrase" type="password" placeholder="******************" autocomplete="new-password" />
+          <input :class="error.passphrase ? 'border-red-500':''" class="focus:outline-none" v-model="passphrase" id="passphrase" type="password" placeholder="******************" autocomplete="new-password" />
           <p v-if="error.passphrase" class="text-red-500 text-xs italic">{{ error.passphrase }}</p>
         </div>
-        <button :disabled="!passphrase || passphrase.length < 6" class="btn btn-blue" @click="decryptSafe">Decrypt and open safe</button>
+        <button :disabled="!passphrase || passphrase.length < 6" class="btn btn-green" @click="decryptSafe">Decrypt and open safe</button>
       </form>
     </div>
     <div v-if="notFound" class="card">

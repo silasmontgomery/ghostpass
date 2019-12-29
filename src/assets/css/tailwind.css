@@ -3,10 +3,10 @@
 @tailwind utilities;
 
 body {
-    @apply font-mono text-sm bg-gray-100 text-gray-800
+    @apply font-mono text-sm bg-gray-100 text-gray-600
 }
-input[type="text"] {
-    @apply w-full appearance-none rounded border border-gray-400 p-2 text-gray-600 leading-tight font-mono
+input[type="text"], input[type="password"] {
+    @apply w-full appearance-none rounded border border-gray-400 mb-2 p-2 text-gray-600 leading-tight font-mono shadow-inner
 }
 h1 {
     @apply text-lg font-semibold mb-2
@@ -21,13 +21,13 @@ ul {
     @apply list-disc pl-5
 }
 label {
-    @apply block mt-2 mb-1 text-gray-600
+    @apply block mb-1 text-gray-600
 }
 a {
-    @apply text-blue-400;
+    @apply text-green-500;
 }
 a:hover {
-    @apply text-blue-600;
+    @apply text-green-700;
 }
 a.danger {
     @apply text-orange-600;
@@ -45,44 +45,41 @@ a.danger:hover {
 .password {
     @apply bg-white border-b border-gray-200;
 }
+.password:hover {
+    @apply bg-gray-200
+}
+.password.selected {
+    @apply bg-gray-500 text-white
+}
 .card {
     @apply mx-auto mb-4 text-left bg-white shadow-md rounded;
 }
 .btn {
-    @apply py-2 px-4 rounded;
+    @apply py-2 px-4 rounded bg-gray-600 text-white;
+}
+.btn:hover {
+    @apply bg-gray-800
 }
 .btn-sm {
     @apply py-1 px-2
 }
-.btn-blue {
-    @apply bg-blue-500 text-white;
+.btn-green {
+    @apply bg-green-500;
 }
-.btn-orange {
-    @apply bg-orange-500 text-white;
+.btn-green:hover {
+    @apply bg-green-700;
 }
-.btn-blue:hover {
-    @apply bg-blue-700;
-}
-.btn-orange:hover {
-    @apply bg-orange-700;
-}
-.btn-blue:disabled, .btn-blue[disabled] {
-    @apply bg-blue-300 text-white;
+.btn-green:disabled, .btn-green[disabled] {
+    @apply bg-green-300 cursor-default
 }
 .tag {
     @apply bg-gray-500 text-xs text-white rounded py-1 px-2 mr-1 mb-1 whitespace-no-wrap inline-block
 }
 a.tag {
-    @apply bg-blue-400
+    @apply bg-gray-700
 }
 a.tag:hover, a.tag.selected {
-    @apply bg-blue-600 text-white
-}
-.password:hover {
-    @apply bg-green-200
-}
-.password.selected {
-    @apply bg-green-500 text-white
+    @apply bg-gray-900 text-white
 }
 
 .vue-tags-input {
