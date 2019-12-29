@@ -27,6 +27,7 @@ label {
     display: block;
     margin-top: 10px;
     margin-bottom: 5px;
+    color: #444;
 }
 a {
     @apply text-blue-500;

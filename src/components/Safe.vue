@@ -34,6 +34,28 @@
       <div class="rounded-t pb-3 bg-white"></div>
       <div class="bg-white pl-4 pr-4 p-2" v-for="(password, index) in filteredPasswords" :key="index" :class="index < filteredPasswords.length-1 ? 'border-b border-gray-200':''">
         {{ password.title }}
+        <div class="rounded bg-gray-200 p-2 m-2">
+          <div>
+            <label for="usernameText">Username</label>
+            <div id="usernameText">
+              {{ password.username }} 
+              <a href="#" @click="copyToClipboard(password.username)"><i class="material-icons text-base">file_copy</i></a>
+            </div>
+          </div>
+          <div>
+            <label for="passwordText">Password</label>
+            <div id="passwordText">
+              {{ mask(password.password) }} 
+              <a href="#" @click="copyToClipboard(password.password)"><i class="material-icons text-base">file_copy</i></a>
+            </div>
+          </div>
+          <div>
+            <label for="tagsText">Tags</label>
+            <div id="tagsText">
+              <span v-for="(tag, index) in password.tags" :key="index" class="tag">{{ tag.text }}</span>
+            </div>
+          </div>
+        </div>
       </div>
       <div class="bg-white rounded-b pl-4 pr-4 pt-3 pb-2">
         <div class="text-gray-700">
