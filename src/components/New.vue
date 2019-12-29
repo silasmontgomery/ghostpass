@@ -1,9 +1,6 @@
 <template>
   <div>
-    <div class="font-mono mb-1">
-      <span class="text-gray-500">Ghostpass:</span> <span class="text-gray-700">Really secure passwords.</span>
-    </div>
-    <div class="card" v-if="!created">
+    <div class="card p-4" v-if="!created">
       <h2>Enter a passphrase to encrypt/decrypt your safe.</h2>
       <p>Ghostpass uses AES128, AES192, AES256 encryption depending on the complexity of your passphrase. The more complex the passphrase, the better the encryption.
       <form @submit.prevent>
@@ -24,7 +21,7 @@
         <button :disabled="!ready" class="btn btn-blue" @click="createSafe">Create Ghostpass Password Safe</button>
       </form>
     </div>
-    <div class="card" v-if="created">
+    <div class="card p-4" v-if="created">
       <h2>Your seed words (write these down someplace safe):</h2>
       <p class="bg-gray-200 font-mono text-lg">{{ seed }}</p>
       <p class="font-hairline">You'll need these words to get your unique URL if you lose or forget it.</p>

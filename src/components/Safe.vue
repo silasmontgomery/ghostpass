@@ -1,15 +1,12 @@
 <template>
   <div>
-    <div class="font-mono h-8 mb-1">
-      <span class="text-gray-500">Ghostpass:</span> <span class="text-gray-700">Really secure passwords.</span>
-      <a href="#" class="float-right" @click="addPassword = !addPassword"><i class="material-icons text-4xl">add_circle</i></a>
-    </div>
+    <a v-if="safe" href="#" class="fixed right-0 top-0 mr-2 mt-2" @click="addPassword = !addPassword"><i class="material-icons text-5xl"><span v-if="!addPassword">add_circle</span><span v-if="addPassword">remove_circle</span></i></a>
     <div v-if="safe">
-      <div class="mb-2">
-        <input type="text" class="w-full appearance-none rounded border border-gray-400 p-2 mb-2 text-gray-700 leading-tight focus:outline-none" v-model="searchText" placeholder="Search" />
+      <div v-if="!addPassword" class="mb-4">
+        <input class="mb-2" type="text" v-model="searchText" placeholder="Search" />
         <a href="#" class="tag" v-for="(tag, index) in safe.tags" :class="searchTags.findIndex(t => t.text == tag.text) > -1 ? 'selected':''" :key="index" @click.prevent="tagClick(tag)">{{ tag.text }}</a>
       </div>
-      <div v-if="addPassword" class="card">
+      <div v-if="addPassword" class="card p-4">
         <div>
           <label for="title">Title</label>
           <input id="title" ref="title" class="appearance-none w-full p-2 border border-gray-400 text-sm text-gray-700 leading-tight focus:outline-none" type="text" v-model="title" placeholder="Title" />
@@ -31,34 +28,29 @@
           <button class="btn btn-sm btn-orange ml-2" @click="addPassword=false">Cancel</button>
         </div>
       </div>
-      <div class="rounded-t pb-3 bg-white"></div>
-      <div class="bg-white pl-4 pr-4 p-2" v-for="(password, index) in filteredPasswords" :key="index" :class="index < filteredPasswords.length-1 ? 'border-b border-gray-200':''" @click="showDetailsClick(index)">
-        {{ password.title }}
-        <div class="rounded bg-gray-200 p-2 m-2" v-if="showDetails==index">
-          <div>
-            <label for="usernameText">Username</label>
-            <div id="usernameText">
-              {{ password.username }} 
-              <a href="#" @click="copyToClipboard(password.username)"><i class="material-icons text-base">file_copy</i></a>
-            </div>
-          </div>
-          <div>
-            <label for="passwordText">Password</label>
-            <div id="passwordText">
-              {{ mask(password.password) }} 
-              <a href="#" @click="copyToClipboard(password.password)"><i class="material-icons text-base">file_copy</i></a>
-            </div>
-          </div>
-          <div>
-            <label for="tagsText">Tags</label>
-            <div id="tagsText">
-              <span v-for="(tag, index) in password.tags" :key="index" class="tag">{{ tag.text }}</span>
+      <div class="card mt-4">
+        <div class="password" v-for="(password, index) in filteredPasswords" :key="index" @click="toggleDetails(index)" :class="showDetails==index ? 'selected':''">
+          <div class="px-4 py-2">{{ password.title }}</div>
+          <div class="shadow-inner bg-gray-200 px-4 py-2" v-if="showDetails==index">
+            <div class="overflow-auto">
+              <div class="whitespace-no-wrap">
+                <span class="text-gray-600">Username:</span>
+                <a class="ml-2" href="#" @click="copyToClipboard(password.username)">{{ password.username }} <i class="material-icons text-lg">file_copy</i></a>
+              </div>
+              <div class="mt-2 whitespace-no-wrap">
+                <span class="text-gray-600">Password:</span>
+                <a class="ml-2" href="#" @click="copyToClipboard(password.password)">{{ mask(password.password) }} <i aria class="material-icons text-lg">file_copy</i></a>
+              </div>
+              <div>
+                <label for="tagsText">Tags:</label>
+                <div id="tagsText">
+                  <span v-for="(tag, index) in password.tags" :key="index" class="tag">{{ tag.text }}</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      <div class="bg-white rounded-b pl-4 pr-4 pt-3 pb-2">
-        <div class="text-gray-700">
+        <div class="text-gray-700 px-4 py-2">
           Per Page: 
           <select class="bg-white border p-1 text-gray-700" v-model="perPage" @change="perPageChanged">
             <option>10</option>
@@ -74,13 +66,10 @@
         </div>
       </div>
     </div>
-    <div v-if="!notFound && !safe" class="card">
-      <h2>Enter a passphrase to decrypt this Ghostpass safe.</h2>
+    <div v-if="!notFound && !safe" class="card p-4">
       <form @submit.prevent>
         <div class="mb-4">
-          <label class="block text-gray-700 text-sm font-bold mb-2" for="passphrase">
-            Passphrase
-          </label>
+          <label for="passphrase">Enter a passphrase to decrypt safe</label>
           <input :class="error.passphrase ? 'border-red-500':''" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" v-model="passphrase" id="passphrase" type="password" placeholder="******************" autocomplete="new-password" />
           <p v-if="error.passphrase" class="text-red-500 text-xs italic">{{ error.passphrase }}</p>
         </div>
@@ -241,9 +230,10 @@ export default {
         this.searchTags = this.searchTags.filter(t => t.text != tag.text)
       }
     },
-    showDetailsClick: function(index) {
-      this.showDetails = null
-      if(this.showDetails != index) {
+    toggleDetails: function(index) {
+      if(this.showDetails == index) {
+        this.showDetails = null
+      } else {
         this.showDetails = index
       }
     },

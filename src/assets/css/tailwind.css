@@ -2,32 +2,29 @@
 @tailwind components;
 @tailwind utilities;
 
+body, input[type="text"] {
+    @apply font-mono text-sm
+}
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #e4e4e4;
+    @apply bg-gray-100 text-gray-800
+}
+input[type="text"] {
+    @apply w-full appearance-none rounded border border-gray-400 p-2 text-gray-700 leading-tight
 }
 h1 {
-    font-size: 1.5rem;
-    font-weight: 500;
-    margin-bottom: 10px;
+    @apply text-lg font-semibold mb-2
 }
 h2 {
-    font-size: 1.25rem;
-    font-weight: 500;
-    margin-bottom: 10px;   
+    @apply text-base font-semibold mb-2
 }
 p, ol, ul {
-    margin-bottom: 10px;
+    @apply mb-2
 }
 ul {
-    list-style: square;
-    padding-left: 30px;
+    @apply list-disc pl-5
 }
 label {
-    display: block;
-    margin-top: 10px;
-    margin-bottom: 5px;
-    color: #666;
+    @apply block mt-2 mb-1 text-gray-600
 }
 a {
     @apply text-blue-500;
@@ -45,14 +42,20 @@ a.danger:hover {
 /**
     Custom Components
 */
+.password:first-child {
+    @apply rounded-t
+}
+.password {
+    @apply bg-white border-b border-gray-200 cursor-pointer;
+}
 .card {
-    @apply mx-auto p-4 mb-4 text-left bg-white shadow-md rounded;
+    @apply mx-auto mb-4 text-left bg-white shadow-md rounded;
 }
 .btn {
-    @apply font-bold py-2 px-4 rounded;
+    @apply py-2 px-4 rounded;
 }
 .btn-sm {
-    @apply font-normal py-1 px-2
+    @apply py-1 px-2
 }
 .btn-blue {
     @apply bg-blue-500 text-white;
@@ -70,13 +73,13 @@ a.danger:hover {
     @apply bg-blue-400 text-white;
 }
 .tag {
-    @apply bg-gray-500 text-sm text-white rounded py-1 px-2 mr-1 mb-1 whitespace-no-wrap inline-block
+    @apply bg-gray-500 text-xs text-white rounded py-1 px-2 mr-1 mb-1 whitespace-no-wrap inline-block
 }
-a.tag:hover {
+a.tag:hover, .password:hover {
     @apply bg-gray-700 text-white
 }
-a.tag.selected {
-    @apply bg-green-500
+a.tag.selected, .password.selected {
+    @apply bg-green-500 text-white
 }
 
 .vue-tags-input {
