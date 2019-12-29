@@ -30,7 +30,7 @@
       </div>
       <div class="card mt-4">
         <div class="password" v-for="(password, index) in filteredPasswords" :key="index" :class="showDetails==index ? 'selected':''">
-          <div class="px-4 py-2" @click="toggleDetails(index)">{{ password.title }}</div>
+          <div class="px-4 py-2 cursor-pointer" @click="toggleDetails(index)">{{ password.title }}</div>
           <div class="shadow-inner bg-gray-200 px-4 py-2" v-if="showDetails==index">
             <div class="overflow-auto">
               <div class="whitespace-no-wrap">
@@ -41,10 +41,10 @@
                 <span class="text-gray-600">Password:</span>
                 <a class="ml-2" href="#" @click="copyToClipboard(password.password)">{{ mask(password.password) }} <i aria class="material-icons text-lg">file_copy</i></a>
               </div>
-              <div>
+              <div v-if="password.tags.length > 0">
                 <label for="tagsText">Tags:</label>
                 <div id="tagsText">
-                  <span v-for="(tag, index) in password.tags" :key="index" class="tag">{{ tag.text }}</span>
+                  <span v-for="(tag, index) in password.tags" :key="index" class="tag bg-gray-600">{{ tag.text }}</span>
                 </div>
               </div>
             </div>

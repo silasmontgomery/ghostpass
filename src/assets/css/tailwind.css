@@ -2,14 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
-body, input[type="text"] {
-    @apply font-mono text-sm
-}
 body {
-    @apply bg-gray-100 text-gray-800
+    @apply font-mono text-sm bg-gray-100 text-gray-800
 }
 input[type="text"] {
-    @apply w-full appearance-none rounded border border-gray-400 p-2 text-gray-700 leading-tight
+    @apply w-full appearance-none rounded border border-gray-400 p-2 text-gray-600 leading-tight font-mono
 }
 h1 {
     @apply text-lg font-semibold mb-2
@@ -27,7 +24,7 @@ label {
     @apply block mt-2 mb-1 text-gray-600
 }
 a {
-    @apply text-blue-500;
+    @apply text-blue-400;
 }
 a:hover {
     @apply text-blue-600;
@@ -46,7 +43,7 @@ a.danger:hover {
     @apply rounded-t
 }
 .password {
-    @apply bg-white border-b border-gray-200 cursor-pointer;
+    @apply bg-white border-b border-gray-200;
 }
 .card {
     @apply mx-auto mb-4 text-left bg-white shadow-md rounded;
@@ -70,15 +67,21 @@ a.danger:hover {
     @apply bg-orange-700;
 }
 .btn-blue:disabled, .btn-blue[disabled] {
-    @apply bg-blue-400 text-white;
+    @apply bg-blue-300 text-white;
 }
 .tag {
     @apply bg-gray-500 text-xs text-white rounded py-1 px-2 mr-1 mb-1 whitespace-no-wrap inline-block
 }
-a.tag:hover, .password:hover {
-    @apply bg-gray-700 text-white
+a.tag {
+    @apply bg-blue-400
 }
-a.tag.selected, .password.selected {
+a.tag:hover, a.tag.selected {
+    @apply bg-blue-600 text-white
+}
+.password:hover {
+    @apply bg-green-200
+}
+.password.selected {
     @apply bg-green-500 text-white
 }
 
