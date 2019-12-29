@@ -1,9 +1,6 @@
 <template>
   <div class="w-full p-4">
     <div v-if="flash" class="absolute right-0 mr-4 py-1 px-2 text-white rounded" :class="flash.success ? 'bg-green-400':'bg-red-500'">{{ flash.message }}</div>
-    <div class="font-mono mb-1">
-      <span class="text-gray-500">Ghostpass:</span> <span class="text-gray-700">Really secure passwords.</span>
-    </div>
     <div>
       <router-view @flash="flash = $event" @log="logToConsole"></router-view>
     </div>

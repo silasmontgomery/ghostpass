@@ -1,5 +1,8 @@
 <template>
   <div>
+    <div class="font-mono mb-1">
+      <span class="text-gray-500">Ghostpass:</span> <span class="text-gray-700">Really secure passwords.</span>
+    </div>
     <div class="card">
       <h2>What is it?</h2>
       <p>Ghostpass is a cloud-based password safe that uses only <a href="https://en.wikipedia.org/wiki/Client-side_encryption" target="_blank">client-side encryption</a> to keep your unencrypted information from being transmitted across the internet or stored on remote servers.</p>

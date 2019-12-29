@@ -1,5 +1,8 @@
 <template>
   <div>
+    <div class="font-mono mb-1">
+      <span class="text-gray-500">Ghostpass:</span> <span class="text-gray-700">Really secure passwords.</span>
+    </div>
     <div class="card" v-if="!created">
       <h2>Enter a passphrase to encrypt/decrypt your safe.</h2>
       <p>Ghostpass uses AES128, AES192, AES256 encryption depending on the complexity of your passphrase. The more complex the passphrase, the better the encryption.

@@ -1,58 +1,54 @@
 <template>
   <div>
-    <div v-if="safe" class="flex flex-wrap">
-      <div class="w-full lg:w-1/3 lg:pr-2">
-        <div>
-            <div class="mb-2">
-              <div class="inline-block" v-if="safe.tags.length > 0">
-                <input type="text" class="w-full appearance-none rounded border border-gray-400 py-1 px-2 mb-2 text-sm text-gray-700 leading-tight focus:outline-none" v-model="searchText" placeholder="Search" />
-                <a href="#" class="tag" v-for="(tag, index) in safe.tags" :class="searchTags.findIndex(t => t.text == tag.text) > -1 ? 'selected':''" :key="index" @click.prevent="tagClick(tag)">{{ tag.text }}</a>
-              </div>
-            </div>
-          </div>
+    <div class="font-mono h-8 mb-1">
+      <span class="text-gray-500">Ghostpass:</span> <span class="text-gray-700">Really secure passwords.</span>
+      <a href="#" class="float-right" @click="addPassword = !addPassword"><i class="material-icons text-4xl">add_circle</i></a>
+    </div>
+    <div v-if="safe">
+      <div class="mb-2">
+        <input type="text" class="w-full appearance-none rounded border border-gray-400 p-2 mb-2 text-gray-700 leading-tight focus:outline-none" v-model="searchText" placeholder="Search" />
+        <a href="#" class="tag" v-for="(tag, index) in safe.tags" :class="searchTags.findIndex(t => t.text == tag.text) > -1 ? 'selected':''" :key="index" @click.prevent="tagClick(tag)">{{ tag.text }}</a>
       </div>
-      <div class="w-full lg:w-2/3 lg:pl-2">
-        <div v-if="addPassword" class="card">
-          <div>
-            <label for="title">Title</label>
-            <input id="title" ref="title" class="appearance-none w-full p-2 border border-gray-400 text-sm text-gray-700 leading-tight focus:outline-none" type="text" v-model="title" placeholder="Title" />
-            <label for="username">Username</label>
-            <input id="username" class="appearance-none w-full p-2 border border-gray-400 text-sm text-gray-700 leading-tight focus:outline-none" type="text" v-model="username" placeholder="Username" />
-            <label for="password">Password</label>
-            <input id="password" class="appearance-none w-full p-2 border border-gray-400 text-sm text-gray-700 leading-tight focus:outline-none" type="text" v-model="password" placeholder="Password" />
-            <label for="tags">Tags</label>
-            <vue-tags-input 
-              id="tags"
-              v-model="tag"
-              :tags="tags"
-              :autocomplete-items="filteredItems"
-              @tags-changed="newTags => tags = newTags">
-            </vue-tags-input>
-          </div>
-          <div class="mt-2">
-            <button class="btn btn-sm btn-blue" :disabled="!title || !username || !password" @click="saveEntry">Save</button> 
-            <button class="btn btn-sm btn-orange ml-2" @click="addPassword=false">Cancel</button>
-          </div>
+      <div v-if="addPassword" class="card">
+        <div>
+          <label for="title">Title</label>
+          <input id="title" ref="title" class="appearance-none w-full p-2 border border-gray-400 text-sm text-gray-700 leading-tight focus:outline-none" type="text" v-model="title" placeholder="Title" />
+          <label for="username">Username</label>
+          <input id="username" class="appearance-none w-full p-2 border border-gray-400 text-sm text-gray-700 leading-tight focus:outline-none" type="text" v-model="username" placeholder="Username" />
+          <label for="password">Password</label>
+          <input id="password" class="appearance-none w-full p-2 border border-gray-400 text-sm text-gray-700 leading-tight focus:outline-none" type="text" v-model="password" placeholder="Password" />
+          <label for="tags">Tags</label>
+          <vue-tags-input 
+            id="tags"
+            v-model="tag"
+            :tags="tags"
+            :autocomplete-items="filteredItems"
+            @tags-changed="newTags => tags = newTags">
+          </vue-tags-input>
         </div>
-        <div class="rounded-t pb-3 bg-white"></div>
-        <div class="bg-white pl-4 pr-4 p-2" v-for="(password, index) in filteredPasswords" :key="index" :class="index < filteredPasswords.length-1 ? 'border-b border-gray-200':''">
-          {{ password.title }}
+        <div class="mt-2">
+          <button class="btn btn-sm btn-blue" :disabled="!title || !username || !password" @click="saveEntry">Save</button> 
+          <button class="btn btn-sm btn-orange ml-2" @click="addPassword=false">Cancel</button>
         </div>
-        <div class="bg-white rounded-b pl-4 pr-4 pt-3 pb-2">
-          <div class="text-gray-700">
-            Per Page: 
-            <select class="bg-white border p-1 text-gray-700" v-model="perPage" @change="perPageChanged">
-              <option>10</option>
-              <option>25</option>
-              <option>50</option>
-              <option>100</option>
-            </select>
-            <span class="ml-2" v-if="pages > 1">
-              Page: <a href="#" @click.prevent="currentPage > 1 ? currentPage-- : false">&lt;&lt;</a>
-              <a href="#" v-for="page in pages" :key="page" class="mx-1" :class="currentPage == page ? 'font-bold':''" @click.prevent="currentPage=page">{{ page }}</a>
-              <a href="#" @click.prevent="currentPage < pages ? currentPage++ : false">&gt;&gt;</a>
-            </span>
-          </div>
+      </div>
+      <div class="rounded-t pb-3 bg-white"></div>
+      <div class="bg-white pl-4 pr-4 p-2" v-for="(password, index) in filteredPasswords" :key="index" :class="index < filteredPasswords.length-1 ? 'border-b border-gray-200':''">
+        {{ password.title }}
+      </div>
+      <div class="bg-white rounded-b pl-4 pr-4 pt-3 pb-2">
+        <div class="text-gray-700">
+          Per Page: 
+          <select class="bg-white border p-1 text-gray-700" v-model="perPage" @change="perPageChanged">
+            <option>10</option>
+            <option>25</option>
+            <option>50</option>
+            <option>100</option>
+          </select>
+          <span class="ml-2" v-if="pages > 1">
+            Page: <a href="#" @click.prevent="currentPage > 1 ? currentPage-- : false">&lt;&lt;</a>
+            <a href="#" v-for="page in pages" :key="page" class="mx-1" :class="currentPage == page ? 'font-bold':''" @click.prevent="currentPage=page">{{ page }}</a>
+            <a href="#" @click.prevent="currentPage < pages ? currentPage++ : false">&gt;&gt;</a>
+          </span>
         </div>
       </div>
     </div>
