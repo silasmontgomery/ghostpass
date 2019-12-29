@@ -29,7 +29,7 @@
         </div>
       </div>
       <div class="card mt-4">
-        <div class="px-4 py-2" v-if="filteredPasswords.length == 0">Hmm.. this safe is empty. <a href="#" @click.prevent="addPassword = true">Add your first password?</a></div>
+        <div class="px-4 py-2" v-if="filteredPasswords.length == 0">Hmm.. no passwords. <a href="#" @click.prevent="addPassword = true">Want to add new one?</a></div>
         <div class="password" v-for="(password, index) in filteredPasswords" :key="index" :class="showDetails==index ? 'selected':''">
           <div class="px-4 py-2 cursor-pointer" @click="toggleDetails(index)">{{ password.title }}</div>
           <div class="shadow-inner bg-gray-200 px-4 py-2" v-if="showDetails==index">
