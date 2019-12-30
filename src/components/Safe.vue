@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="safe" class="w-12 fixed right-0 bottom-0 mr-2 mb-8 pt-1 rounded-lg shadow bg-white text-center">
+    <div v-if="safe" class="w-12 fixed z-50 right-0 bottom-0 mr-2 mb-8 pt-1 rounded-lg shadow bg-white text-center">
       <a href="#" @click.prevent="addPassword = !addPassword"><i class="material-icons text-4xl"><span v-if="!addPassword">add_circle</span><span v-if="addPassword">remove_circle</span></i></a> 
       <a href="#" @click.prevent="lockSafe"><i class="material-icons text-4xl">lock_open</i></a>
       <a href="#" class="danger" @click.prevent="newSafe"><i class="material-icons text-4xl">fiber_new</i></a>
