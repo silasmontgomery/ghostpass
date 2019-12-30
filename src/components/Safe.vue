@@ -181,7 +181,7 @@ export default {
         password: this.password,
         tags: this.tags
       }
-      if(!this.editIndex > -1) {
+      if(this.editIndex > -1) {
         this.safe.passwords[this.editIndex] = entry
       } else {
         this.safe.passwords.push(entry)

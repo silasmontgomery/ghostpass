@@ -21,7 +21,14 @@
         <li>Anytime you make a change the safe is automatically encrypted and backed up to the remote server.</li>
       </ul>
     </div>
-    <div class="mb-4"><button class="btn btn-green" @click="$router.push('/new')">Create a new safe</button> -or- <button class="btn" @click="$router.push('/retrieve')">Retrieve your URL</button></div>
+    <div class="flex mb-4">
+      <div class="w-1/2 pr-1">
+        <button class="btn btn-green w-full" @click="$router.push('/new')">Create a new safe</button>
+      </div>
+      <div class="w-1/2 pl-1">
+        <button class="btn w-full" @click="$router.push('/retrieve')">Retrieve your URL</button>
+      </div>
+    </div>
   </div>
 </template>
 
