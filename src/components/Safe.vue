@@ -2,7 +2,7 @@
   <div>
     <a v-if="safe" href="#" class="fixed right-0 top-0 mr-2 mt-2" @click="addPassword = !addPassword"><i class="material-icons text-5xl"><span v-if="!addPassword">add_circle</span><span v-if="addPassword">remove_circle</span></i></a>
     <div v-if="safe">
-      <div v-if="!addPassword" class="mb-4">
+      <div class="mb-4">
         <input class="mb-2 focus:outline-none" type="text" v-model="searchText" placeholder="Search" />
         <a href="#" class="tag" v-for="(tag, index) in safe.tags" :class="searchTags.findIndex(t => t.text == tag.text) > -1 ? 'selected':''" :key="index" @click.prevent="tagClick(tag)">{{ tag.text }}</a>
       </div>
@@ -42,11 +42,15 @@
                 <span class="text-gray-600">Password:</span>
                 <a class="ml-2" href="#" @click="copyToClipboard(password.password)">{{ mask(password.password) }} <i aria class="material-icons text-lg">file_copy</i></a>
               </div>
-              <div v-if="password.tags.length > 0">
+              <div v-if="password.tags.length > 0" class="mt-2">
                 <label for="tagsText">Tags:</label>
                 <div id="tagsText">
                   <span v-for="(tag, index) in password.tags" :key="index" class="tag bg-gray-600">{{ tag.text }}</span>
                 </div>
+              </div>
+              <div class="mt-2 flex">
+                <div class="w-1/2 text-left"><a href="#" @click.prevent="editEntry(index)"><i class="material-icons text-lg">edit</i>Edit</a></div>
+                <div class="w-1/2 text-right"><a href="#" class="danger" @click.prevent="deleteEntry(index)"><i class="material-icons text-lg ml-2">delete</i>Delete</a></div>
               </div>
             </div>
           </div>
@@ -99,6 +103,7 @@ export default {
       tag: '',
       tags: [],
       showDetails: null,
+      editIndex: null,
       searchText: '',
       searchTags: [],
       currentPage: 1,
@@ -122,6 +127,7 @@ export default {
         this.username = null
         this.password = null
         this.tags = []
+        this.editIndex = null
       }
     }
   },
@@ -174,7 +180,11 @@ export default {
         password: this.password,
         tags: this.tags
       }
-      this.safe.passwords.push(entry)
+      if(this.editIndex) {
+        this.safe.passwords[this.editIndex] = entry
+      } else {
+        this.safe.passwords.push(entry)
+      }
       this.safe.passwords.sort((a, b) => (a.title > b.title) ? 1 : -1)
       this.addPassword = false
       this.saveSafe('Safe updated')
@@ -207,7 +217,17 @@ export default {
         this.saveSafe('Password deleted')
       }
     },
-    updateTags: function() {
+    editEntry: function(editIndex) {
+      this.editIndex = editIndex
+      this.title = this.safe.passwords[editIndex].title
+      this.username = this.safe.passwords[editIndex].username
+      this.password = this.safe.passwords[editIndex].password
+      this.safe.passwords[editIndex].tags.forEach(tag => {
+        this.tags.push(tag)
+      })
+      this.addPassword = true
+    },
+    updateTags: function() { 
       this.safe.passwords.forEach(password => {
         password.tags.forEach(tag => {
           if(!this.safe.tags.find(t => t.text.toLowerCase() == tag.text.toLowerCase())) {
@@ -215,7 +235,21 @@ export default {
           }
         })
       })
+      this.pruneTags()
       this.safe.tags.sort((a, b) => (a > b) ? 1 : -1)
+    },
+    pruneTags: function() {
+      let tags = []
+      this.safe.tags.forEach((tag) => {
+        let inUse = false
+        if(this.safe.passwords.find(p => p.tags.find(t => t.text.toLowerCase() == tag.text.toLowerCase()))) {
+            inUse = true
+        }
+        if(inUse) {
+          tags.push(tag)
+        }
+        this.safe.tags = tags
+      })
     },
     mask: function(text) {
       let masked = ''
