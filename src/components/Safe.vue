@@ -1,6 +1,6 @@
 <template>
   <div>
-    <a v-if="safe" href="#" class="fixed right-0 top-0 mr-2 mt-2" @click="addPassword = !addPassword"><i class="material-icons text-5xl"><span v-if="!addPassword">add_circle</span><span v-if="addPassword">remove_circle</span></i></a>
+    <a v-if="safe" href="#" class="fixed right-0 top-0 mr-2 mt-2" @click="addPassword = !addPassword"><i class="material-icons text-4xl"><span v-if="!addPassword">add_circle</span><span v-if="addPassword">remove_circle</span></i></a>
     <div v-if="safe">
       <div class="mb-4">
         <input class="mb-2 focus:outline-none" type="text" v-model="searchText" placeholder="Search" />
@@ -56,18 +56,23 @@
           </div>
         </div>
         <div class="text-gray-700 px-4 py-2">
-          Per Page: 
-          <select class="bg-white border p-1 text-gray-700" v-model="perPage" @change="perPageChanged">
-            <option>10</option>
-            <option>25</option>
-            <option>50</option>
-            <option>100</option>
-          </select>
-          <span class="ml-2" v-if="pages > 1">
-            Page: <a href="#" @click.prevent="currentPage > 1 ? currentPage-- : false">&lt;&lt;</a>
-            <a href="#" v-for="page in pages" :key="page" class="mx-1" :class="currentPage == page ? 'font-bold':''" @click.prevent="currentPage=page">{{ page }}</a>
-            <a href="#" @click.prevent="currentPage < pages ? currentPage++ : false">&gt;&gt;</a>
-          </span>
+          <div v-if="pages > 1" class="mb-2 whitespace-no-wrap overflow-auto">
+            Page: 
+            <span class="text-base">
+              <a class="mr-2" href="#" @click.prevent="currentPage > 1 ? currentPage-- : false">&lt;</a>
+              <a class="mr-2" href="#" v-for="page in pages" :key="page" :class="currentPage == page ? 'font-bold':''" @click.prevent="currentPage=page">{{ page }}</a>
+              <a href="#" @click.prevent="currentPage < pages ? currentPage++ : false">&gt;</a>
+            </span>
+          </div>
+          <div>
+            Per Page: 
+            <select class="bg-white border p-1 text-gray-700" v-model="perPage" @change="perPageChanged">
+              <option>10</option>
+              <option>25</option>
+              <option>50</option>
+              <option>100</option>
+            </select>
+          </div>
         </div>
       </div>
     </div>
@@ -157,6 +162,7 @@ export default {
       .then((response) => {
         this.$emit('log', response)
         this.encryptedSafe = response.data.safe
+        this.$storage.setItem('uid', this.uid)
       })
       .catch((error) => {
         console.log(error.response)

@@ -35,5 +35,16 @@
 <script>
 export default {
   name: 'Home',
+  data: function() {
+    return {
+      uid: null
+    }
+  },
+  mounted: function() {
+    this.uid = this.$storage.getItem('uid')
+    if(this.uid) {
+      this.$router.push('/safe/' + this.uid)
+    }
+  }
 }
 </script>

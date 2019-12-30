@@ -26,7 +26,7 @@
       <p class="bg-gray-200 font-mono text-lg">{{ seed }}</p>
       <p class="font-hairline">You'll need these words to get your unique URL if you lose or forget it.</p>
       <h2>Your Ghostpass Unique URL (be sure to bookmark):</h2>
-      <p class="bg-gray-200 text-lg"><a :href="'/safe/' + uid" target="_blank">{{ '/safe/' + uid }}</a></p>
+      <p class="bg-gray-200 text-lg"><router-link :to="'/safe/' + uid">{{ '/safe/' + uid }}</router-link></p>
     </div>
   </div>
 </template>
