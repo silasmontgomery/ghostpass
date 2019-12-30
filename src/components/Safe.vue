@@ -38,7 +38,7 @@
         <div class="px-4 py-2" v-if="filteredPasswords.length == 0">Hmm... nothing. <a href="#" @click.prevent="addPassword = true">Add a password?</a></div>
         <div class="password" v-for="(password, index) in filteredPasswords" :key="index" :class="showIndex==index ? 'selected':''">
           <div class="px-4 py-2 cursor-pointer" @click="toggleDetails(index)">{{ password.title }}</div>
-          <div class="shadow-inner bg-gray-200 px-4 py-2" v-if="showIndex==index">
+          <div class="shadow-inner bg-gray-100 px-4 py-2" v-if="showIndex==index">
             <div class="overflow-auto">
               <div class="whitespace-no-wrap">
                 <span class="text-gray-600">Username:</span>
@@ -49,10 +49,7 @@
                 <a class="ml-2" href="#" @click="copyToClipboard(password.password)">{{ mask(password.password) }} <i aria class="material-icons text-lg">file_copy</i></a>
               </div>
               <div v-if="password.tags.length > 0" class="mt-2">
-                <label for="tagsText">Tags:</label>
-                <div id="tagsText">
-                  <span v-for="(tag, index) in password.tags" :key="index" class="tag bg-gray-600">{{ tag.text }}</span>
-                </div>
+                <div class="text-gray-600 whitespace-no-wrap overflow-auto">Tags: <span class="text-gray-800">{{ password.tags.map(t => t.text).join(', ') }}</span></div>
               </div>
               <div class="mt-2 flex">
                 <div class="w-1/2 text-left"><a href="#" @click.prevent="editEntry(index)"><i class="material-icons text-lg">edit</i>Edit</a></div>
