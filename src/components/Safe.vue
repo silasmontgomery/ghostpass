@@ -30,9 +30,9 @@
       </div>
       <div class="card mt-4">
         <div class="px-4 py-2" v-if="filteredPasswords.length == 0">Hmm.. no passwords. <a href="#" @click.prevent="addPassword = true">Want to add new one?</a></div>
-        <div class="password" v-for="(password, index) in filteredPasswords" :key="index" :class="showDetails==index ? 'selected':''">
+        <div class="password" v-for="(password, index) in filteredPasswords" :key="index" :class="showIndex==index ? 'selected':''">
           <div class="px-4 py-2 cursor-pointer" @click="toggleDetails(index)">{{ password.title }}</div>
-          <div class="shadow-inner bg-gray-200 px-4 py-2" v-if="showDetails==index">
+          <div class="shadow-inner bg-gray-200 px-4 py-2" v-if="showIndex==index">
             <div class="overflow-auto">
               <div class="whitespace-no-wrap">
                 <span class="text-gray-600">Username:</span>
@@ -102,8 +102,8 @@ export default {
       password: null,
       tag: '',
       tags: [],
-      showDetails: null,
-      editIndex: null,
+      showIndex: -1,
+      editIndex: -1,
       searchText: '',
       searchTags: [],
       currentPage: 1,
@@ -127,7 +127,8 @@ export default {
         this.username = null
         this.password = null
         this.tags = []
-        this.editIndex = null
+        this.editIndex = -1
+        this.showIndex = -1
       }
     }
   },
@@ -180,7 +181,7 @@ export default {
         password: this.password,
         tags: this.tags
       }
-      if(this.editIndex) {
+      if(!this.editIndex > -1) {
         this.safe.passwords[this.editIndex] = entry
       } else {
         this.safe.passwords.push(entry)
@@ -214,6 +215,7 @@ export default {
         })
         this.safe.passwords = passwords;
         this.safe.passwords.sort((a, b) => (a.title > b.title) ? 1 : -1)
+        this.showIndex = -1
         this.saveSafe('Password deleted')
       }
     },
@@ -266,10 +268,10 @@ export default {
       }
     },
     toggleDetails: function(index) {
-      if(this.showDetails == index) {
-        this.showDetails = null
+      if(this.showIndex == index) {
+        this.showIndex = -1
       } else {
-        this.showDetails = index
+        this.showIndex = index
       }
     },
     copyToClipboard: function(text) {
