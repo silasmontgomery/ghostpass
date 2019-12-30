@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="safe" class="w-12 fixed right-0 top-0 mr-2 mt-2 pt-1 rounded-lg shadow bg-white text-center">
+    <div v-if="safe" class="w-12 fixed right-0 bottom-0 mr-4 mb-4 pt-1 rounded-lg shadow bg-white text-center">
       <a href="#" @click.prevent="addPassword = !addPassword"><i class="material-icons text-4xl"><span v-if="!addPassword">add_circle</span><span v-if="addPassword">remove_circle</span></i></a> 
       <a href="#" @click.prevent="lockSafe"><i class="material-icons text-4xl">lock_open</i></a>
       <a href="#" class="danger" @click.prevent="newSafe"><i class="material-icons text-4xl">fiber_new</i></a>
@@ -8,7 +8,9 @@
     <div v-if="safe">
       <div class="mb-4">
         <input class="mb-2 focus:outline-none" type="text" v-model="searchText" placeholder="Search" />
-        <a href="#" class="tag" v-for="(tag, index) in safe.tags" :class="searchTags.findIndex(t => t.text == tag.text) > -1 ? 'selected':''" :key="index" @click.prevent="tagClick(tag)">{{ tag.text }}</a>
+        <div class="whitespace-no-wrap overflow-auto">
+          <a href="#" class="tag" v-for="(tag, index) in safe.tags" :class="searchTags.findIndex(t => t.text == tag.text) > -1 ? 'selected':''" :key="index" @click.prevent="tagClick(tag)">{{ tag.text }}</a>
+        </div>
       </div>
       <div v-if="addPassword" class="card p-4">
         <div>
