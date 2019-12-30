@@ -82,6 +82,12 @@ a.tag:hover, a.tag.selected {
     @apply bg-gray-900 text-white
 }
 
-.vue-tags-input {
-    background: #324652;
+/* Override some vue-tags-input styles */
+.ti-input {
+    @apply rounded shadow-inner
+}
+.ti-new-tag-input {
+    border: none !important;
+    box-shadow: none !important;
+    @apply text-sm
 }

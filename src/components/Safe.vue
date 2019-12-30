@@ -1,6 +1,10 @@
 <template>
   <div>
-    <a v-if="safe" href="#" class="fixed right-0 top-0 mr-2 mt-2" @click="addPassword = !addPassword"><i class="material-icons text-4xl"><span v-if="!addPassword">add_circle</span><span v-if="addPassword">remove_circle</span></i></a>
+    <div v-if="safe" class="w-12 fixed right-0 top-0 mr-2 mt-2 pt-1 rounded-lg shadow bg-white text-center">
+      <a href="#" @click.prevent="addPassword = !addPassword"><i class="material-icons text-4xl"><span v-if="!addPassword">add_circle</span><span v-if="addPassword">remove_circle</span></i></a> 
+      <a href="#" @click.prevent="lockSafe"><i class="material-icons text-4xl">lock_open</i></a>
+      <a href="#" class="danger" @click.prevent="newSafe"><i class="material-icons text-4xl">fiber_new</i></a>
+    </div>
     <div v-if="safe">
       <div class="mb-4">
         <input class="mb-2 focus:outline-none" type="text" v-model="searchText" placeholder="Search" />
@@ -29,7 +33,7 @@
         </div>
       </div>
       <div class="card mt-4">
-        <div class="px-4 py-2" v-if="filteredPasswords.length == 0">Hmm.. no passwords. <a href="#" @click.prevent="addPassword = true">Want to add new one?</a></div>
+        <div class="px-4 py-2" v-if="filteredPasswords.length == 0">Hmm... nothing. <a href="#" @click.prevent="addPassword = true">Add a password?</a></div>
         <div class="password" v-for="(password, index) in filteredPasswords" :key="index" :class="showIndex==index ? 'selected':''">
           <div class="px-4 py-2 cursor-pointer" @click="toggleDetails(index)">{{ password.title }}</div>
           <div class="shadow-inner bg-gray-200 px-4 py-2" v-if="showIndex==index">
@@ -278,6 +282,15 @@ export default {
         this.showIndex = -1
       } else {
         this.showIndex = index
+      }
+    },
+    lockSafe: function() {
+      this.safe = null
+      this.passphrase = null
+    },
+    newSafe: function() {
+      if(window.confirm('Are you sure you wish to close this safe and create a new one? Be sure you have saved your unique URL and/or seed words.')) {
+        this.$router.push('/new')
       }
     },
     copyToClipboard: function(text) {
