@@ -59,20 +59,6 @@
           </div>
         </div>
         <div class="text-gray-700 px-4 py-2">
-<<<<<<< HEAD
-          Per Page: 
-          <select class="bg-white border p-1 text-gray-700" v-model="perPage">
-            <option>10</option>
-            <option>25</option>
-            <option>50</option>
-            <option>100</option>
-          </select>
-          <span class="ml-2" v-if="pages > 1">
-            Page: <a href="#" @click.prevent="currentPage > 1 ? currentPage-- : false">&lt;&lt;</a>
-            <a href="#" v-for="page in pages" :key="page" class="mx-1" :class="currentPage == page ? 'font-bold':''" @click.prevent="currentPage=page">{{ page }}</a>
-            <a href="#" @click.prevent="currentPage < pages ? currentPage++ : false">&gt;&gt;</a>
-          </span>
-=======
           <div v-if="pages > 1" class="mb-2 whitespace-no-wrap overflow-auto">
             Page: 
             <span class="text-base">
@@ -90,7 +76,6 @@
               <option>100</option>
             </select>
           </div>
->>>>>>> b38d623fef7506680bcb5a30fa94b47dbd2e389e
         </div>
       </div>
     </div>
