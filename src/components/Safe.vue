@@ -53,7 +53,7 @@
         </div>
         <div class="text-gray-700 px-4 py-2">
           Per Page: 
-          <select class="bg-white border p-1 text-gray-700" v-model="perPage" @change="perPageChanged">
+          <select class="bg-white border p-1 text-gray-700" v-model="perPage">
             <option>10</option>
             <option>25</option>
             <option>50</option>
@@ -102,7 +102,7 @@ export default {
       searchText: '',
       searchTags: [],
       currentPage: 1,
-      perPage: 10,
+      perPage: this.safe && this.safe.perPage ? this.safe.perPage : 10,
       pages: 0,
       notFound: false,
       addPassword: false,
@@ -122,6 +122,14 @@ export default {
         this.username = null
         this.password = null
         this.tags = []
+      }
+    },
+    perPage: function(perPage) {
+      this.pages = Math.ceil(this.filteredPasswords.length / this.perPage)
+      this.currentPage = 1
+      if(this.safe) {
+        this.safe.perPage = perPage
+        this.saveSafe('Safe updated.')
       }
     }
   },
@@ -160,6 +168,7 @@ export default {
       try {
         let bytes = this.$crypto.AES.decrypt(this.encryptedSafe, this.passphrase)
         this.safe = JSON.parse(bytes.toString(this.$crypto.enc.Utf8))
+        this.perPage = this.safe.perPage ? this.safe.perPage : 10
         this.pages = Math.ceil(this.safe.passwords.length / this.perPage)
       }
       catch(err) {
