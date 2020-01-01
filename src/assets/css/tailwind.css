@@ -73,15 +73,21 @@ a.danger:hover {
     @apply bg-green-300 cursor-default
 }
 .tag {
-    @apply bg-gray-500 text-xs text-white rounded py-1 px-2 mr-1 mb-1 whitespace-no-wrap inline-block
+    @apply text-xs text-gray-600 rounded border-2 border-gray-500 py-1 px-2 mr-1 mb-1 whitespace-no-wrap inline-block
 }
 a.tag {
-    @apply bg-gray-700
+    @apply text-white border-0 bg-gray-500
 }
 a.tag:hover, a.tag.selected {
-    @apply bg-gray-900 text-white
+    @apply text-white border-0 bg-gray-800 text-white
 }
 
-.vue-tags-input {
-    background: #324652;
+/* Override some vue-tags-input styles */
+.ti-input {
+    @apply rounded shadow-inner
+}
+.ti-new-tag-input {
+    border: none !important;
+    box-shadow: none !important;
+    @apply text-sm
 }

@@ -1,10 +1,16 @@
 <template>
   <div>
-    <a v-if="safe" href="#" class="fixed right-0 top-0 mr-2 mt-2" @click="addPassword = !addPassword"><i class="material-icons text-5xl"><span v-if="!addPassword">add_circle</span><span v-if="addPassword">remove_circle</span></i></a>
+    <div v-if="safe" class="w-12 fixed z-50 right-0 bottom-0 mr-2 mb-8 pt-1 rounded-lg shadow bg-white text-center">
+      <a href="#" @click.prevent="addPassword = !addPassword"><i class="material-icons text-4xl"><span v-if="!addPassword">add_circle</span><span v-if="addPassword">remove_circle</span></i></a> 
+      <a href="#" @click.prevent="lockSafe"><i class="material-icons text-4xl">lock_open</i></a>
+      <a href="#" class="danger" @click.prevent="newSafe"><i class="material-icons text-4xl">fiber_new</i></a>
+    </div>
     <div v-if="safe">
-      <div v-if="!addPassword" class="mb-4">
+      <div class="mb-4">
         <input class="mb-2 focus:outline-none" type="text" v-model="searchText" placeholder="Search" />
-        <a href="#" class="tag" v-for="(tag, index) in safe.tags" :class="searchTags.findIndex(t => t.text == tag.text) > -1 ? 'selected':''" :key="index" @click.prevent="tagClick(tag)">{{ tag.text }}</a>
+        <div class="whitespace-no-wrap overflow-auto">
+          <a href="#" class="tag" v-for="(tag, index) in safe.tags" :class="searchTags.findIndex(t => t.text == tag.text) > -1 ? 'selected':''" :key="index" @click.prevent="tagClick(tag)">{{ tag.text }}</a>
+        </div>
       </div>
       <div v-if="addPassword" class="card p-4">
         <div>
@@ -29,10 +35,10 @@
         </div>
       </div>
       <div class="card mt-4">
-        <div class="px-4 py-2" v-if="filteredPasswords.length == 0">Hmm.. no passwords. <a href="#" @click.prevent="addPassword = true">Want to add new one?</a></div>
-        <div class="password" v-for="(password, index) in filteredPasswords" :key="index" :class="showDetails==index ? 'selected':''">
+        <div class="px-4 py-2" v-if="filteredPasswords.length == 0">Hmm... nothing. <a href="#" @click.prevent="addPassword = true">Add a password?</a></div>
+        <div class="password" v-for="(password, index) in filteredPasswords" :key="index" :class="showIndex==index ? 'selected':''">
           <div class="px-4 py-2 cursor-pointer" @click="toggleDetails(index)">{{ password.title }}</div>
-          <div class="shadow-inner bg-gray-200 px-4 py-2" v-if="showDetails==index">
+          <div class="shadow-inner bg-gray-100 px-4 py-2" v-if="showIndex==index">
             <div class="overflow-auto">
               <div class="whitespace-no-wrap">
                 <span class="text-gray-600">Username:</span>
@@ -42,16 +48,18 @@
                 <span class="text-gray-600">Password:</span>
                 <a class="ml-2" href="#" @click="copyToClipboard(password.password)">{{ mask(password.password) }} <i aria class="material-icons text-lg">file_copy</i></a>
               </div>
-              <div v-if="password.tags.length > 0">
-                <label for="tagsText">Tags:</label>
-                <div id="tagsText">
-                  <span v-for="(tag, index) in password.tags" :key="index" class="tag bg-gray-600">{{ tag.text }}</span>
-                </div>
+              <div v-if="password.tags.length > 0" class="mt-2">
+                <div class="text-gray-600 whitespace-no-wrap overflow-auto">Tags: <span class="text-gray-800">{{ password.tags.map(t => t.text).join(', ') }}</span></div>
+              </div>
+              <div class="mt-2 flex">
+                <div class="w-1/2 text-left"><a href="#" @click.prevent="editEntry(index)"><i class="material-icons text-lg">edit</i>Edit</a></div>
+                <div class="w-1/2 text-right"><a href="#" class="danger" @click.prevent="deleteEntry(index)"><i class="material-icons text-lg ml-2">delete</i>Delete</a></div>
               </div>
             </div>
           </div>
         </div>
         <div class="text-gray-700 px-4 py-2">
+<<<<<<< HEAD
           Per Page: 
           <select class="bg-white border p-1 text-gray-700" v-model="perPage">
             <option>10</option>
@@ -64,6 +72,25 @@
             <a href="#" v-for="page in pages" :key="page" class="mx-1" :class="currentPage == page ? 'font-bold':''" @click.prevent="currentPage=page">{{ page }}</a>
             <a href="#" @click.prevent="currentPage < pages ? currentPage++ : false">&gt;&gt;</a>
           </span>
+=======
+          <div v-if="pages > 1" class="mb-2 whitespace-no-wrap overflow-auto">
+            Page: 
+            <span class="text-base">
+              <a class="mr-2" href="#" @click.prevent="currentPage > 1 ? currentPage-- : false">&lt;</a>
+              <a class="mr-2" href="#" v-for="page in pages" :key="page" :class="currentPage == page ? 'font-bold':''" @click.prevent="currentPage=page">{{ page }}</a>
+              <a href="#" @click.prevent="currentPage < pages ? currentPage++ : false">&gt;</a>
+            </span>
+          </div>
+          <div>
+            Per Page: 
+            <select class="bg-white border p-1 text-gray-700" v-model="perPage" @change="perPageChanged">
+              <option>10</option>
+              <option>25</option>
+              <option>50</option>
+              <option>100</option>
+            </select>
+          </div>
+>>>>>>> b38d623fef7506680bcb5a30fa94b47dbd2e389e
         </div>
       </div>
     </div>
@@ -98,7 +125,8 @@ export default {
       password: null,
       tag: '',
       tags: [],
-      showDetails: null,
+      showIndex: -1,
+      editIndex: -1,
       searchText: '',
       searchTags: [],
       currentPage: 1,
@@ -122,6 +150,8 @@ export default {
         this.username = null
         this.password = null
         this.tags = []
+        this.editIndex = -1
+        this.showIndex = -1
       }
     },
     perPage: function(perPage) {
@@ -158,6 +188,7 @@ export default {
       .then((response) => {
         this.$emit('log', response)
         this.encryptedSafe = response.data.safe
+        this.$storage.setItem('uid', this.uid)
       })
       .catch((error) => {
         console.log(error.response)
@@ -183,7 +214,11 @@ export default {
         password: this.password,
         tags: this.tags
       }
-      this.safe.passwords.push(entry)
+      if(this.editIndex > -1) {
+        this.safe.passwords[this.editIndex] = entry
+      } else {
+        this.safe.passwords.push(entry)
+      }
       this.safe.passwords.sort((a, b) => (a.title > b.title) ? 1 : -1)
       this.addPassword = false
       this.saveSafe('Safe updated')
@@ -213,10 +248,21 @@ export default {
         })
         this.safe.passwords = passwords;
         this.safe.passwords.sort((a, b) => (a.title > b.title) ? 1 : -1)
+        this.showIndex = -1
         this.saveSafe('Password deleted')
       }
     },
-    updateTags: function() {
+    editEntry: function(editIndex) {
+      this.editIndex = editIndex
+      this.title = this.safe.passwords[editIndex].title
+      this.username = this.safe.passwords[editIndex].username
+      this.password = this.safe.passwords[editIndex].password
+      this.safe.passwords[editIndex].tags.forEach(tag => {
+        this.tags.push(tag)
+      })
+      this.addPassword = true
+    },
+    updateTags: function() { 
       this.safe.passwords.forEach(password => {
         password.tags.forEach(tag => {
           if(!this.safe.tags.find(t => t.text.toLowerCase() == tag.text.toLowerCase())) {
@@ -224,7 +270,21 @@ export default {
           }
         })
       })
+      this.pruneTags()
       this.safe.tags.sort((a, b) => (a > b) ? 1 : -1)
+    },
+    pruneTags: function() {
+      let tags = []
+      this.safe.tags.forEach((tag) => {
+        let inUse = false
+        if(this.safe.passwords.find(p => p.tags.find(t => t.text.toLowerCase() == tag.text.toLowerCase()))) {
+            inUse = true
+        }
+        if(inUse) {
+          tags.push(tag)
+        }
+        this.safe.tags = tags
+      })
     },
     mask: function(text) {
       let masked = ''
@@ -241,10 +301,19 @@ export default {
       }
     },
     toggleDetails: function(index) {
-      if(this.showDetails == index) {
-        this.showDetails = null
+      if(this.showIndex == index) {
+        this.showIndex = -1
       } else {
-        this.showDetails = index
+        this.showIndex = index
+      }
+    },
+    lockSafe: function() {
+      this.safe = null
+      this.passphrase = null
+    },
+    newSafe: function() {
+      if(window.confirm('Are you sure you wish to close this safe and create a new one? Be sure you have saved your unique URL and/or seed words.')) {
+        this.$router.push('/new')
       }
     },
     copyToClipboard: function(text) {

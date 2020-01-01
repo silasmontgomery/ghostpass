@@ -13,6 +13,7 @@ Vue.use(VueTagsInput)
 // Add vue prototypes for component access
 Vue.prototype.$http = Axios
 Vue.prototype.$crypto = CryptoJS
+Vue.prototype.$storage = window.localStorage
 
 // Components
 import App from './App.vue'
