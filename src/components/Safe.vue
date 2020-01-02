@@ -36,7 +36,7 @@
       </div>
       <div class="card mt-4">
         <div class="px-4 py-2" v-if="filteredPasswords.length == 0">Hmm... nothing. <a href="#" @click.prevent="addPassword = true">Add a password?</a></div>
-        <div class="password" v-for="(password, index) in filteredPasswords" :key="index" :class="showIndex==index ? 'selected':''">
+        <div class="password" v-for="(password, index) in paginate(filteredPasswords)" :key="index" :class="showIndex==index ? 'selected':''">
           <div class="px-4 py-2 cursor-pointer" @click="toggleDetails(index)">{{ password.title }}</div>
           <div class="shadow-inner bg-gray-100 px-4 py-2" v-if="showIndex==index">
             <div class="overflow-auto">
@@ -69,7 +69,7 @@
           </div>
           <div>
             Per Page: 
-            <select class="bg-white border p-1 text-gray-700" v-model="perPage" @change="perPageChanged">
+            <select class="bg-white border p-1 text-gray-700" v-model="perPage">
               <option>10</option>
               <option>25</option>
               <option>50</option>
@@ -116,7 +116,7 @@ export default {
       searchTags: [],
       currentPage: 1,
       perPage: this.safe && this.safe.perPage ? this.safe.perPage : 10,
-      pages: 0,
+      pages: 1,
       notFound: false,
       addPassword: false,
       error: {}
@@ -140,7 +140,7 @@ export default {
       }
     },
     perPage: function(perPage) {
-      this.pages = Math.ceil(this.filteredPasswords.length / this.perPage)
+      this.pages = Math.ceil(this.filteredPasswords.length / perPage)
       this.currentPage = 1
       if(this.safe) {
         this.safe.perPage = perPage
@@ -161,7 +161,7 @@ export default {
         results = results.filter(r => r.tags.find(rt => rt.text == tag.text))
       })
 
-      return results.slice((this.currentPage * this.perPage) - this.perPage, (this.currentPage * this.perPage))
+      return results
     },
     filteredItems: function() {
       return this.safe.tags.filter(i => i.text.toLowerCase().includes(this.tag.toLowerCase()));
@@ -312,9 +312,8 @@ export default {
       document.body.removeChild(el)
       this.$emit('flash', { message: 'Copied to clipboard', success: true })
     },
-    perPageChanged: function() {
-      this.pages = Math.ceil(this.filteredPasswords.length / this.perPage)
-      this.currentPage = 1
+    paginate: function(list) {
+      return list.slice((this.currentPage * this.perPage) - this.perPage, (this.currentPage * this.perPage))
     }
   }
 }
