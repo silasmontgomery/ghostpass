@@ -239,10 +239,10 @@ export default {
     },
     editEntry: function(editIndex) {
       this.editIndex = editIndex
-      this.title = this.safe.passwords[editIndex].title
-      this.username = this.safe.passwords[editIndex].username
-      this.password = this.safe.passwords[editIndex].password
-      this.safe.passwords[editIndex].tags.forEach(tag => {
+      this.title = this.filteredPasswords[editIndex].title
+      this.username = this.filteredPasswords[editIndex].username
+      this.password = this.filteredPasswords[editIndex].password
+      this.filteredPasswords[editIndex].tags.forEach(tag => {
         this.tags.push(tag)
       })
       this.addPassword = true
