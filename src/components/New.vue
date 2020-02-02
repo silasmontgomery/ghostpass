@@ -77,8 +77,7 @@ export default {
         this.seed = response.data.seed
         this.safe = {
           uid: this.uid,
-          passwords: [],
-          tags: []
+          passwords: []
         }
         this.saveSafe();
       })

@@ -9,7 +9,7 @@
       <div class="mb-4">
         <input class="mb-2 focus:outline-none" type="text" v-model="searchText" placeholder="Search" />
         <div class="whitespace-no-wrap overflow-auto">
-          <a href="#" class="tag" v-for="(tag, index) in safe.tags" :class="searchTags.findIndex(t => t.text == tag.text) > -1 ? 'selected':''" :key="index" @click.prevent="tagClick(tag)">{{ tag.text }}</a>
+          <a href="#" class="tag" v-for="(tag, index) in filteredTags" :class="searchTags.findIndex(t => t.text == tag.text) > -1 ? 'selected':''" :key="index" @click.prevent="tagClick(tag)">{{ tag.text }}</a>
         </div>
       </div>
       <div v-if="addPassword" class="card p-4">
@@ -30,7 +30,7 @@
           </vue-tags-input>
         </div>
         <div class="mt-2">
-          <button class="btn btn-sm btn-green" :disabled="!title || !username || !password" @click="saveEntry">Save</button> 
+          <button class="btn btn-sm btn-green" :disabled="!title || !username || !password" @click="addEntry">Save</button> 
           <button class="btn btn-sm ml-2" @click="addPassword=false">Cancel</button>
         </div>
       </div>
@@ -116,7 +116,6 @@ export default {
       searchTags: [],
       currentPage: 1,
       perPage: this.safe && this.safe.perPage ? this.safe.perPage : 10,
-      pages: 1,
       notFound: false,
       addPassword: false,
       error: {}
@@ -140,7 +139,6 @@ export default {
       }
     },
     perPage: function(perPage) {
-      this.pages = Math.ceil(this.filteredPasswords.length / perPage)
       this.currentPage = 1
       if(this.safe) {
         this.safe.perPage = perPage
@@ -149,6 +147,9 @@ export default {
     }
   },
   computed: {
+    pages: function() {
+      return Math.ceil(this.filteredPasswords.length / this.perPage);
+    },
     filteredPasswords: function() {
       let results = this.safe.passwords;
       if(this.searchText.length > 0) {
@@ -164,8 +165,46 @@ export default {
       return results
     },
     filteredItems: function() {
-      return this.safe.tags.filter(i => i.text.toLowerCase().includes(this.tag.toLowerCase()));
+      return this.allTags.filter(i => i.text.toLowerCase().includes(this.tag.toLowerCase()));
     },
+    allTags: function() {
+      let tags = []
+      if(this.safe && this.safe.passwords) {
+        this.safe.passwords.forEach(p => {
+          p.tags.forEach(pt => {
+            if(tags.findIndex(t => pt.text == t.text) == -1) {
+              tags.push(pt);
+            }
+          })
+        })
+      }
+      return tags.sort((a, b) => {
+          if(a.text.toUpperCase() > b.text.toUpperCase()) {
+              return 1;
+          } else if(a.text.toUpperCase() < b.text.toUpperCase()) {
+              return -1;
+          }
+          return 0;
+      })
+    },
+    filteredTags: function() {
+      let tags = []
+      this.filteredPasswords.forEach(p => {
+        p.tags.forEach(pt => {
+          if(tags.findIndex(t => pt.text == t.text) == -1) {
+            tags.push(pt);
+          }
+        })
+      })
+      return tags.sort((a, b) => {
+          if(a.text.toUpperCase() > b.text.toUpperCase()) {
+              return 1;
+          } else if(a.text.toUpperCase() < b.text.toUpperCase()) {
+              return -1;
+          }
+          return 0;
+      })
+    }
   },
   methods: {
     fetchSafe: function() {
@@ -185,14 +224,27 @@ export default {
         let bytes = this.$crypto.AES.decrypt(this.encryptedSafe, this.passphrase)
         this.safe = JSON.parse(bytes.toString(this.$crypto.enc.Utf8))
         this.perPage = this.safe.perPage ? this.safe.perPage : 10
-        this.pages = Math.ceil(this.safe.passwords.length / this.perPage)
       }
       catch(err) {
         this.$emit('flash', { message: 'Problem decrypting safe. Wrong password?', success: false })
         this.passphrase = null
       }
     },
-    saveEntry: function() {
+    saveSafe: function(message) {
+      this.encryptedSafe = this.$crypto.AES.encrypt(JSON.stringify(this.safe), this.passphrase).toString()
+      this.$http.put('/api/safe/' + this.uid, {
+        uid: this.uid,
+        safe: this.encryptedSafe
+      })
+      .then((response) => {
+        console.log(response)
+        this.$emit('flash', { message: message, success: true })
+      })
+      .catch((error) => {
+        console.log(error.response)
+      })
+    },
+    addEntry: function() {
       let entry = {
         title: this.title,
         username: this.username,
@@ -207,21 +259,6 @@ export default {
       this.safe.passwords.sort((a, b) => (a.title > b.title) ? 1 : -1)
       this.addPassword = false
       this.saveSafe('Safe updated')
-    },
-    saveSafe: function(message) {
-      this.updateTags();
-      this.encryptedSafe = this.$crypto.AES.encrypt(JSON.stringify(this.safe), this.passphrase).toString()
-      this.$http.put('/api/safe/' + this.uid, {
-        uid: this.uid,
-        safe: this.encryptedSafe
-      })
-      .then((response) => {
-        console.log(response)
-        this.$emit('flash', { message: message, success: true })
-      })
-      .catch((error) => {
-        console.log(error.response)
-      })
     },
     deleteEntry: function(delIndex) {
       if(confirm('Are you sure you want to delete this entry?')) {
@@ -246,30 +283,6 @@ export default {
         this.tags.push(tag)
       })
       this.addPassword = true
-    },
-    updateTags: function() { 
-      this.safe.passwords.forEach(password => {
-        password.tags.forEach(tag => {
-          if(!this.safe.tags.find(t => t.text.toLowerCase() == tag.text.toLowerCase())) {
-            this.safe.tags.push(tag)
-          }
-        })
-      })
-      this.pruneTags()
-      this.safe.tags.sort((a, b) => (a > b) ? 1 : -1)
-    },
-    pruneTags: function() {
-      let tags = []
-      this.safe.tags.forEach((tag) => {
-        let inUse = false
-        if(this.safe.passwords.find(p => p.tags.find(t => t.text.toLowerCase() == tag.text.toLowerCase()))) {
-            inUse = true
-        }
-        if(inUse) {
-          tags.push(tag)
-        }
-        this.safe.tags = tags
-      })
     },
     mask: function(text) {
       let masked = ''
